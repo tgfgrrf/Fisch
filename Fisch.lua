@@ -176,7 +176,7 @@ if DeviceType == "Mobile" then
         Title = "Hypexz V2 ",
         SubTitle = "by dawid",
         TabWidth = 120,
-        Size = UDim2.fromOffset(350, 245),
+        Size = UDim2.fromOffset(245, 150),
         Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
         Theme = "Dark",
         MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
