@@ -171,12 +171,18 @@ local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/
 local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
+local Offset 
+if DeviceType == "Mobile" then
+    Offset = UDim2.fromOffset(464, 368) -- 580 * 0.8 = 464, 460 * 0.8 = 368
+else
+    Offset = UDim2.fromOffset(580, 460)
+end
 
 local Window = Fluent:CreateWindow({
     Title = "Hypexz V2 ",
     SubTitle = "by dawid",
     TabWidth = 120,
-    Size = UDim2.fromOffset(580, 460),
+    Size = Offset,--UDim2.fromOffset(580, 460),
     Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
