@@ -172,27 +172,15 @@ local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/d
 local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
 
-if DeviceType == "Mobile" then
-    local Window = Fluent:CreateWindow({
-        Title = "Hypexz V2 ",
-        SubTitle = "by dawid",
-        TabWidth = 120,
-        Size = UDim2.fromOffset(580, 460),
-        Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
-        Theme = "Dark",
-        MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
-    })
-else
-    local Window = Fluent:CreateWindow({
-        Title = "Hypexz V2 ",
-        SubTitle = "by dawid",
-        TabWidth = 120,
-        Size = UDim2.fromOffset(650, 530),
-        Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
-        Theme = "Dark",
-        MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
-    })
-end
+local Window = Fluent:CreateWindow({
+    Title = "Hypexz V2 ",
+    SubTitle = "by dawid",
+    TabWidth = 120,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+})
 
 local savedPosition = nil
 if _G.Settings.Farm.Position then
