@@ -68,6 +68,7 @@ spawn(function()
         repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
     end
 end)
+wait(5)
 
 getgenv().Load = function()
     print("Loaded!")
@@ -2571,3 +2572,4 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
