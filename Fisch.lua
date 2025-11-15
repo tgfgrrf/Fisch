@@ -215,6 +215,17 @@ spawn(function()
     end
 end)
 
+
+task.spawn(function()
+    while wait() do
+        game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+            if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+                game:GetService("TeleportService"):Teleport(game.PlaceId)
+            end
+        end)
+    end
+end)
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
