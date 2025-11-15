@@ -166,6 +166,38 @@ if DeviceType == "Mobile" then
     end)
 end
 
+if DeviceType == "Mobile" then
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+
+    local Window = Fluent:CreateWindow({
+        Title = "Hypexz V2 ",
+        SubTitle = "by dawid",
+        TabWidth = 120,
+        Size = UDim2.fromOffset(350, 245),
+        Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
+        Theme = "Dark",
+        MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    })
+else
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+
+    local Window = Fluent:CreateWindow({
+        Title = "Hypexz V2 ",
+        SubTitle = "by dawid",
+        TabWidth = 120,
+        Size = UDim2.fromOffset(650, 530),
+        Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
+        Theme = "Dark",
+        MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+    })
+end
+
 local savedPosition = nil
 if _G.Settings.Farm.Position then
 	local sp = _G.Settings.Farm.Position
@@ -733,20 +765,7 @@ end
 
 
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
 
-
-local Window = Fluent:CreateWindow({
-    Title = "Hypexz V2 ",
-    SubTitle = "by dawid",
-    TabWidth = 120,
-    Size = UDim2.fromOffset(650, 530),
-    Acrylic = false, -- The blur may be detectable, setting this to false disables blur entirely
-    Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
-})
 
 --Hypexz provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
