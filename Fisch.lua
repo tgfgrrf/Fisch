@@ -1,7 +1,7 @@
 _G.Settings = {
     Farm = {
         Position = {},
-        Mode = "Save Position",-- "Save Position","Freez"
+        Mode = "Save Position",--"Trash","Level","Enchant Relic","Save Position","Freez"
         SelectBoat = "",
         EnableBoat = true,
         Enable = false,
@@ -36,6 +36,10 @@ _G.Settings = {
         Enable = false
     },
 
+    Fish = {
+        SellAll = true
+    },
+
     Daily_Shop = {
         SelectItem = {},
         Enable = true
@@ -68,7 +72,8 @@ spawn(function()
         repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
     end
 end)
-wait(5)
+
+task.wait(3)
 
 getgenv().Load = function()
     print("Loaded!")
@@ -175,7 +180,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 local Offset 
 if DeviceType == "Mobile" then
     Offset = UDim2.fromOffset(464, 368) -- 580 * 0.8 = 464, 460 * 0.8 = 368
-else
+elseif DeviceType == "PC" then
     Offset = UDim2.fromOffset(580, 460)
 end
 
@@ -251,117 +256,6 @@ local Signals = {
 }
 getgenv().rememberPosition = nil
 print(getgenv().rememberPosition)
-
--- local function TP(...)
---      local RealtargetPos = {...}
--- 	local targetPos = RealtargetPos[1]
--- 	local RealTarget
--- 	if type(targetPos) == "vector" then
--- 		RealTarget = CFrame.new(targetPos)
--- 	elseif type(targetPos) == "userdata" then
--- 		RealTarget = targetPos
--- 	elseif type(targetPos) == "number" then
--- 		RealTarget = CFrame.new(unpack(RealtargetPos))
--- 	end
-
---     if game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health == 0 then if tween then tween:Cancel() end repeat wait() until game.Players.LocalPlayer.Character:WaitForChild("Humanoid").Health > 0; wait(0.2) end
---     if _G.Settings.Farm.EnableBoat and Character.Humanoid.Sit == true then
---         for i ,v in pairs(workspace.active.boats[PlayerName][_G.Settings.Farm.SelectBoat]:GetChildren()) do
---             if v.Name == "Base" and v:IsA("Part") then
---                 v:SetPrimaryPartCFrame(RealTarget)
---             end
---         end
---     else
---         game.Players.LocalPlayer.Character["HumanoidRootPart"].CFrame = RealTarget
---     end
--- end
-
--- local TweenService = game:GetService("TweenService")
-
--- local function TP(...)
---     -- [Same argument handling as above] ...
-
---     local character = game.Players.LocalPlayer.Character
---     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
---     local root = character.HumanoidRootPart
---     local humanoid = character.Humanoid
-
---     -- Death check
---     if humanoid.Health <= 0 then
---         if _G.CurrentTween then _G.CurrentTween:Cancel() end
---         humanoid.Died:Wait()
---         character:WaitForChild("HumanoidRootPart", 10)
---         task.wait(0.5)
---     end
-
---     -- Boat mode
---     if _G.Settings.Farm.EnableBoat and humanoid.Sit then
---         local boat = workspace.active.boats[game.Players.LocalPlayer.Name][_G.Settings.Farm.SelectBoat]
---         local base = boat:FindFirstChild("Base")
---         if base and base:IsA("BasePart") then
---             local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Linear)
---             _G.CurrentTween = TweenService:Create(base, tweenInfo, {CFrame = RealTarget})
---             _G.CurrentTween:Play()
---             _G.CurrentTween.Completed:Wait()
---             return
---         end
---     end
-
---     -- Smooth player tween
---     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint)
---     _G.CurrentTween = TweenService:Create(root, tweenInfo, {CFrame = RealTarget})
---     _G.CurrentTween:Play()
---     _G.CurrentTween.Completed:Wait()
--- end
-
--- local function TPB(...)
---     local args = {...}
---     local targetPos = args[1]
---     local RealTarget
-
---     -- Handle different input types
---     if typeof(targetPos) == "Vector3" then
---         RealTarget = CFrame.new(targetPos)
---     elseif typeof(targetPos) == "CFrame" then
---         RealTarget = targetPos
---     elseif typeof(targetPos) == "Instance" and targetPos:IsA("BasePart") then
---         RealTarget = targetPos.CFrame
---     elseif typeof(targetPos) == "number" then
---         RealTarget = CFrame.new(unpack(args))  -- {x, y, z}
---     else
---         warn("TP: Invalid target type")
---         return
---     end
-
---     local player = game.Players.LocalPlayer
---     local character = player.Character or player.CharacterAdded:Wait()
---     local humanoid = character:WaitForChild("Humanoid")
---     local root = character:WaitForChild("HumanoidRootPart")
-
---     -- Death/respawn handler (no tween cancel needed)
---     if humanoid.Health <= 0 then
---         repeat task.wait() until humanoid.Health > 0
---         task.wait(0.2)  -- Small buffer after respawn
---         character = player.Character
---         humanoid = character:WaitForChild("Humanoid")
---         root = character:WaitForChild("HumanoidRootPart")
---     end
--- -- Boat mode (instant, no tween)
---     if _G.Settings.Farm.EnableBoat and humanoid.Sit then
---         local boatFolder = workspace.active.boats:FindFirstChild(player.Name)
---         if boatFolder then
---             local boat = boatFolder:FindFirstChild(_G.Settings.Farm.SelectBoat)
---             if boat then
---                 local base = boat:FindFirstChild("Base")
---                 if base and base:IsA("Part") then
---                     base:SetPrimaryPartCFrame(RealTarget)
---                 end
---             end
---         end
---         warn("TP: Boat not found or Base missing")
---     end
--- end
 
 
 local Players = game:GetService("Players")
@@ -494,12 +388,16 @@ local function GetProgressBarScale()
     end
 end
 
+
+local Rellconnect
+
 local function Reel()
     local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
     local Mode = _G.Settings.Farm.Reel.Mode
     local Bar = _G.Settings.Farm.Reel.Bar
     local BareelProgress = _G.Settings.Farm.Reel.ReelBarprogress
     local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+    
     if playerGui then
         local reel = playerGui:FindFirstChild("reel")
         if reel then
@@ -512,6 +410,11 @@ local function Reel()
                     if _G.Settings.Farm.Reel.Enable then
                         if Bar == "Center" then
                             spawn(function()
+                                Rellconnect = game:GetService("RunService").Heartbeat:Connect(function()
+                                    pcall(function()
+                                        playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
+                                    end)
+                                end)
                                 if Mode == "Safe 80" then
                                     local prog = GetProgressBarScale()
                                     if prog and prog >= 0.80 then
@@ -532,10 +435,6 @@ local function Reel()
                                     end
                                 end
                             end)
-                          
-                            pcall(function()
-                                playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
-                            end)
                         elseif Bar == "Large" then
                             spawn(function()
                                 pcall(function()
@@ -554,7 +453,7 @@ local function Reel()
                                 end
                             elseif Mode == "Fast[Risk]" then
                                 local prog = GetProgressBarScale()
-                                if prog and prog >= tonumber(BareelProgress) then
+                                if prog and prog > tonumber(BareelProgress) then
                                     pcall(function()
                                         ReplicatedStorage.events.reelfinished:FireServer(100, true)
                                         task.wait(0.5)
@@ -572,90 +471,6 @@ end
 
 local Ready = false
 
-local function GetSelfDistance(Position)
-    local RootPart = HumanoidRootPart
-    return (RootPart.Position - Position).Magnitude
-end
-local function handleBossTarget(name, targetCFrame, distanceThreshold, platformStand)
-    local distance = GetSelfDistance(targetCFrame.Position)
-    if distance > distanceThreshold then
-        game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
-    end
-
-    TP(targetCFrame)
-
-    if platformStand then
-        -- game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-    end
-
-    if distance < distanceThreshold then
-        Ready = true
-    end
-end
-
-local function handleBossTargetB(name, targetCFrame, distanceThreshold, platformStand)
-    local distance = GetSelfDistance(targetCFrame.Position)
-    if distance > distanceThreshold then
-        game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
-    end
-
-    TPB(targetCFrame)
-
-    if platformStand then
-        -- game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-    end
-
-    if distance < distanceThreshold then
-        Ready = true
-    end
-end
-
-local function CheckBoss()
-    local Zone = workspace.zones
-    local fish = Zone:FindFirstChild("Fishing")
-    local SelectedTable = _G.Settings.Boss.SelectBoss
-    if type(SelectedTable) ~= "table" then return nil end
-
-    local bossEventNames = {}
-    for name in pairs(SelectedTable) do
-        bossEventNames[name] = true
-    end
-
-    for _, obj in ipairs(workspace.zones.fishing:GetChildren()) do
-        if obj:IsA("Part") then
-            if bossEventNames[obj.Name] then
-                return obj.Name --, "zone"
-            end
-        end
-    end
-
-    return nil 
-end
-
-
-local function CheckBoss2()
-    local bossList = _G.Settings.Boss.SelectBoss
-    local players = game:GetService("Players")
-
-    if type(bossList) ~= "table" then return nil end
-
-    -- Convert bossList keys to a lookup set for faster access
-    local bossNames = {}
-    for name in pairs(bossList) do
-        bossNames[name] = true
-    end
-
-    for _, obj in ipairs(workspace:GetChildren()) do
-        if obj:IsA("Model") and not players:GetPlayerFromCharacter(obj) then
-            if bossNames[obj.Name] then
-                return obj.Name
-            end
-        end
-    end
-
-    return nil
-    
-end
 
 
 task.spawn(function()
@@ -753,21 +568,6 @@ local function rememberPosition()
     end)
 end
 
--- local function ChangRod(index)
---     local BackPack = LocalPlayer.Backpack:FindFirstChild(index)
---     local Chapack = Character:FindFirstChild(index)
---     if not BackPack and not Chapack then
---         local args = {
---             [1] = index
---         }
-
---         game:GetService("ReplicatedStorage"):WaitForChild("packages"):WaitForChild("Net"):WaitForChild("RF/Rod/Equip"):InvokeServer(index)
---     end
--- end
-
-
-
-
 
 --Hypexz provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
@@ -841,10 +641,41 @@ BossFarmTogle:OnChanged(function(value)
 end)
 
 
+local SellallTogle = Tabs.Main:AddToggle("SellallTogle", {Title = "Auto Sell [All]", Default = _G.Settings.Fish.SellAll })
+SellallTogle:OnChanged(function(value)
+    _G.Settings.Fish.SellAll = value
+    getgenv().SaveSetting()
+end)
+
+
+local SellAllEvent = ReplicatedStorage:WaitForChild("events"):WaitForChild("SellAll")
+
+-- Initialize sell timer
+local Selltime = tick()
+
+-- Start the auto-sell loop
+spawn(function()
+    while task.wait() do
+        if not _G.Settings.Fish.SellAll then return end
+        if tick() - Selltime >= 60 then 
+            local success, err = pcall(function()
+                SellAllEvent:InvokeServer()
+            end)
+            if success then
+                Selltime = tick() -- Reset timer only on success
+                print("Sold all fish!")
+            else
+                warn("Failed to sell: " .. tostring(err))
+            end
+        end
+    end
+end)
+
+
 local function ChangRod(rodName)
-
-    game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
-
+    repeat task.wait() 
+        game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
+    until LocalPLayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
     print("ChangRod ",rodName)
 end
 
@@ -872,6 +703,140 @@ local function ActivateTotem()
     return false
 end
 
+
+local function TeleportMode()
+    local Mode = _G.Settings.Farm.Mode
+    if Mode == "Trash" then
+        Status:SetTitle("Status : Farm Trash")
+        return CFrame.new(-1143.84082, 134.632812, -1080.47131, 0.986154318, 7.84733611e-09, -0.165830299, -1.20236212e-08, 1, -2.4180201e-08, 0.165830299, 2.58392898e-08, 0.986154318)
+    elseif Mode == "Level" then
+        Status:SetTitle("Status : Farm Level")
+        return CFrame.new(1376.12842, -603.603577, 2337.55347, 0.945005476, -3.90646875e-08, -0.32705453, 4.45639081e-08, 1, 9.32092448e-09, 0.32705453, -2.33831532e-08, 0.945005476)
+    elseif Mode == "Enchant Relic" then
+        Status:SetTitle("Status : Farm Enchant Relic")
+        return CFrame.new(990.893005, -737.973633, 1465.72644, -0.978376806, -8.6212566e-09, 0.206830382, -8.02586353e-09, 1, 3.71772391e-09, -0.206830382, 1.97734251e-09, -0.978376806)
+    elseif Mode == "Save Position" then
+        Status:SetTitle("Status : Farm Save Position")
+        return savedPosition
+    else
+        if not getgenv().rememberPosition ~= nil then
+            Status:SetTitle("Status : Farm Remember Position")
+            return CFrame.new(getgenv().rememberPosition)
+        else
+            getgenv().rememberPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
+    end
+end
+
+local function ResetrodWhennotFound(name)
+    local playerStats = workspace.PlayerStats[PlayerName]
+    local rodValue = playerStats.T[PlayerName].Stats.rod.Value
+    local RodChar = Character:FindFirstChild(rodValue)
+    local bober = RodChar and RodChar:FindFirstChild("bobber")
+    local value = RodChar and RodChar:FindFirstChild("values")
+    local bite = value and value:FindFirstChild("bite")
+    if bober and bite.Value == true then
+        for i,v in pairs(bober:GetDescendants()) do
+            if v.Name == name and v:IsA("Model") then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
+
+local function GetSelfDistance(Position)
+    local RootPart = HumanoidRootPart
+    return (RootPart.Position - Position).Magnitude
+end
+local function handleBossTarget(name, targetCFrame, distanceThreshold, platformStand)
+    local distance = GetSelfDistance(targetCFrame.Position)
+    if distance > distanceThreshold then
+        game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+    end
+
+    TP(targetCFrame)
+
+    if platformStand then
+        -- game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+    end
+
+    if distance < distanceThreshold then
+        Ready = true
+    end
+end
+
+local function handleBossTargetB(name, targetCFrame, distanceThreshold, platformStand)
+    local distance = GetSelfDistance(targetCFrame.Position)
+    if distance > distanceThreshold then
+        game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+    end
+
+    TPB(targetCFrame)
+
+    -- if name == "Forsaken Veil - Scylla" then
+    --     if ResetrodWhennotFound("Scylla") == false then
+    --         game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+    --     end
+    -- end
+
+    if platformStand then
+        -- game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+    end
+
+    if distance < distanceThreshold then
+        Ready = true
+    end
+end
+
+local function CheckBoss()
+    local Zone = workspace.zones
+    local fish = Zone:FindFirstChild("Fishing")
+    local SelectedTable = _G.Settings.Boss.SelectBoss
+    if type(SelectedTable) ~= "table" then return nil end
+
+    local bossEventNames = {}
+    for name in pairs(SelectedTable) do
+        bossEventNames[name] = true
+    end
+
+    for _, obj in ipairs(workspace.zones.fishing:GetChildren()) do
+        if obj:IsA("Part") then
+            if bossEventNames[obj.Name] then
+                return obj.Name --, "zone"
+            end
+        end
+    end
+
+    return nil 
+end
+
+
+local function CheckBoss2()
+    local bossList = _G.Settings.Boss.SelectBoss
+    local players = game:GetService("Players")
+
+    if type(bossList) ~= "table" then return nil end
+
+    -- Convert bossList keys to a lookup set for faster access
+    local bossNames = {}
+    for name in pairs(bossList) do
+        bossNames[name] = true
+    end
+
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and not players:GetPlayerFromCharacter(obj) then
+            if bossNames[obj.Name] then
+                return obj.Name
+            end
+        end
+    end
+
+    return nil
+    
+end
 
 spawn(function()
 
@@ -1061,7 +1026,7 @@ spawn(function()
 
                                 local targetCFrame = getBossTargetCFrame(BossInfo)
                                 if targetCFrame then
-                                    Status:SetTitle("Status : Farm ", BossSpawn)
+                                    Status:SetTitle("Status : Farm "..BossSpawn)
                                     handleBossTargetB(BossSpawn, targetCFrame, BossInfo.threshold, BossInfo.platformStand)
                                     return
                                 end
@@ -1134,9 +1099,11 @@ spawn(function()
                             ensureRod(ROD_MAIN)
                         end
 
+                        
+
                         local targetCFrame = getBossTargetCFrame(BossInfo)
                         if targetCFrame then
-                            Status:SetTitle("Status : Farm ", BossSpawn)
+                            Status:SetTitle("Status : Farm "..tostring(BossSpawn))
                             handleBossTarget(BossSpawn, targetCFrame, BossInfo.threshold, BossInfo.platformStand)
                             return
                         end
@@ -1155,52 +1122,17 @@ spawn(function()
                             end
                         else
                             ensureRod(ROD_MAIN)
-                            if ModeFarm == "Save Position" then
-                                AutoFreeze = false
-                                Status:SetTitle("Status : Position")
-                                TP(savedPosition)
-                            else
-                                Status:SetTitle("Status : Non Position")
-                                if not getgenv().rememberPosition ~= nil then
-                                    TP(savedPosition)
-                                else
-                                    getgenv().rememberPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                                end
-                            end
+                            TP(TeleportMode())
                             Ready = true
                         end
                     else
                         ensureRod(ROD_MAIN)
-                        if ModeFarm == "Save Position" then
-                            AutoFreeze = false
-                            Status:SetTitle("Status : Position")
-                            TP(savedPosition)
-                        else
-                            Status:SetTitle("Status : Non Position")
-                            if not getgenv().rememberPosition ~= nil then
-                                TP(savedPosition)
-                            else
-                                getgenv().rememberPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                            end
-                            -- rememberPosition()
-                            -- AutoFreeze = true
-                        end
+                        TP(TeleportMode())
                         Ready = true
                     end
                 else
                     ensureRod(ROD_MAIN)
-                    if ModeFarm == "Save Position" then
-                        AutoFreeze = false
-                        Status:SetTitle("Status : Position")
-                        TP(savedPosition)
-                    else
-                        Status:SetTitle("Status : Non Position")
-                        if not getgenv().rememberPosition ~= nil then
-                            TP(savedPosition)
-                        else
-                            getgenv().rememberPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-                        end
-                    end
+                    TP(TeleportMode())
                     Ready = true
                 end
             end
@@ -1237,6 +1169,11 @@ spawn(function()
             local shakeUi = PlayerGui:FindFirstChild("shakeui")
             local reelUi = PlayerGui:FindFirstChild("reel")
             if not bobber then
+                if Rellconnect then 
+                    Rellconnect:Disconnect() 
+                    Rellconnect = nil
+                    print("Discon ",Rellconnect)
+                end
                 if not _G.Settings.Farm.Cast.Enable then return end
                 local Resault
                 if CastMode == "Perfect" then
@@ -1249,7 +1186,7 @@ spawn(function()
                 ReplicatedStorage.events.CancelEmote:FireServer()
                 task.wait(0.5)
                 if rodCharacter:FindFirstChild("events") then
-                    rodCharacter.events.castAsync:InvokeServer(tonumber(Resault), 1)
+                    rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
                 else
                     warn("castAsync event not found")
                 end
@@ -1270,7 +1207,82 @@ spawn(function()
                 until reelUi or not Ready or not shakeUi
             elseif reelUi and reelUi:FindFirstChild("bar") then
                 if not _G.Settings.Farm.Reel.Enable then return end
-                Reel()
+                -- Reel()
+                local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
+                local Mode = _G.Settings.Farm.Reel.Mode
+                local Bar = _G.Settings.Farm.Reel.Bar
+                local BareelProgress = _G.Settings.Farm.Reel.ReelBarprogress
+                local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+                
+                if playerGui then
+                    local reel = playerGui:FindFirstChild("reel")
+                    if reel then
+                        local bar = reel:FindFirstChild("bar")
+                        if bar then
+                            local fish = bar:FindFirstChild("fish")
+                            local playerbar = bar:FindFirstChild("playerbar")
+                            
+                            if fish and playerbar and fish:IsA("GuiObject") and playerbar:IsA("GuiObject") then
+                                if _G.Settings.Farm.Reel.Enable then
+                                    if Bar == "Center" then
+                                        spawn(function()
+                                            Rellconnect = game:GetService("RunService").Heartbeat:Connect(function()
+                                                pcall(function()
+                                                    playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
+                                                end)
+                                            end)
+                                            if Mode == "Safe 80" then
+                                                local prog = GetProgressBarScale()
+                                                if prog and prog >= 0.80 then
+                                                    pcall(function()
+                                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                        task.wait(0.5)
+                                                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                    end)
+                                                end
+                                            elseif Mode == "Fast[Risk]" then
+                                                local prog = GetProgressBarScale()
+                                                if prog and prog >= tonumber(BareelProgress) then
+                                                    pcall(function()
+                                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                        task.wait(0.5)
+                                                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                    end)
+                                                end
+                                            end
+                                        end)
+                                    elseif Bar == "Large" then
+                                        spawn(function()
+                                            pcall(function()
+                                                playerbar.Size = UDim2.fromScale(1,1)
+                                            end)
+                                        end)
+
+                                        if Mode == "Safe 80" then
+                                            local prog = GetProgressBarScale()
+                                            if prog and prog >= 0.80 then
+                                                pcall(function()
+                                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                    task.wait(0.5)
+                                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                end)
+                                            end
+                                        elseif Mode == "Fast[Risk]" then
+                                            local prog = GetProgressBarScale()
+                                            if prog and prog > tonumber(BareelProgress) then
+                                                pcall(function()
+                                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                    task.wait(0.5)
+                                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                end)
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
             end
         end)
         
@@ -1285,7 +1297,7 @@ local FarmSection = Tabs.Main:AddSection("Setting Farm")
 
 local Mfv = Tabs.Main:AddDropdown("Mfv", {
     Title = "Select Mode Farm",
-    Values = {"Save Position","Freez"},
+    Values = {"Trash","Level","Enchant Relic","Save Position","Freez"},
     Multi = false,
     Default = _G.Settings.Farm.Mode,
 })
@@ -1294,6 +1306,7 @@ Mfv:OnChanged(function(Value)
     _G.Settings.Farm.Mode = Value
     getgenv().SaveSetting()
 end)
+
 
 local CMV = Tabs.Main:AddDropdown("CMV", {
     Title = "Select Mode Cast",
@@ -1691,14 +1704,13 @@ Tabs.Main:AddButton({
     Description = "Refresh Rod List",
     Callback = function()
         table.Clear(RodNames)
-
         for _, v in pairs(PathRod:GetChildren()) do
+            RodNameSet[v.Name] = false
             if not RodNameSet[v.Name] then
                 table.insert(RodNames, v.Name)
                 RodNameSet[v.Name] = true
             end
         end
-
         table.sort(RodNames, function(a, b)
             return a:lower() < b:lower()
         end)
@@ -2454,6 +2466,19 @@ end)
 
 local FarmSection = Tabs.Shop:AddSection("Daily Shop")
 
+-- game:GetService("Players").LocalPlayer.PlayerGui.hud.safezone.BlackMarket.Visible 
+
+Tabs.Shop:AddButton({
+    Title = "Open Black Market",
+    Description = "",
+    Callback = function()
+        game:GetService("Players").LocalPlayer.PlayerGui.hud.safezone.BlackMarket.Visible = true
+    end
+})
+
+
+local FarmSection = Tabs.Shop:AddSection("Daily Shop")
+
 local Itemlist = {
     "Sundial Totem",
     "Enchant Relic",
@@ -2491,6 +2516,9 @@ end)
 for i,v in pairs(_G.Settings.Daily_Shop.SelectItem) do
     print(v)
 end
+
+
+
 
 local AutoBuyDailyShop = Tabs.Shop:AddToggle("AutoBuyDailyShop", {Title = "Auto Buy", Default = _G.Settings.Daily_Shop.Enable })
 
@@ -2572,4 +2600,3 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
-
