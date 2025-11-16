@@ -61,17 +61,15 @@ function Click()
 end
 
 print(game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled)
-spawn(function()
-    if game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == true then
-        repeat wait() until game:IsLoaded()
-        repeat wait() until game.Players.LocalPlayer
-        local plr = game.Players.LocalPlayer
-        repeat wait() until plr.Character
-        repeat wait() until plr.Character:FindFirstChild("HumanoidRootPart")
-        repeat wait() until plr.Character:FindFirstChild("Humanoid")
-        repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
-    end
-end)
+
+repeat wait() until game:IsLoaded()
+repeat wait() until game.Players.LocalPlayer
+local plr = game.Players.LocalPlayer
+repeat wait() until plr.Character
+repeat wait() until plr.Character:FindFirstChild("HumanoidRootPart")
+repeat wait() until plr.Character:FindFirstChild("Humanoid")
+repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
+
 
 task.wait(3)
 
@@ -257,6 +255,17 @@ local Signals = {
 getgenv().rememberPosition = nil
 print(getgenv().rememberPosition)
 
+local Autokick = tick()
+
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+spawn(function()
+    while wait(1) do
+        if tick() - Autokick > 1800 then
+            TeleportService:TeleportToPlaceInstance(game.placeId, game.JobId, Players.LocalPlayer)
+        end
+    end
+end)
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
