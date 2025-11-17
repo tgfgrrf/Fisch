@@ -581,7 +581,7 @@ end
 --Hypexz provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Rod = Window:AddTab({ Title = "Red Settings",Icon = "glass-water"})
+    Rod = Window:AddTab({ Title = "Red Settings",Icon = "glass-water"}),
     Teleport = Window:AddTab{Title = "Teleport",Icon = "map"},
     Shop = Window:AddTab({Title = "Shop",Icon = "shopping-cart"}),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
@@ -2611,3 +2611,4 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
