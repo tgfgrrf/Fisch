@@ -581,6 +581,7 @@ end
 --Hypexz provides Lucide Icons https://lucide.dev/icons/ for the tabs, icons are optional
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Rod = Window:AddTab({ Title = "Red Settings",Icon = "glass-water"})
     Teleport = Window:AddTab{Title = "Teleport",Icon = "map"},
     Shop = Window:AddTab({Title = "Shop",Icon = "shopping-cart"}),
     Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
@@ -1656,7 +1657,7 @@ EnableBoatToggle:OnChanged(function(value)
     getgenv().SaveSetting()
 end)
 
-local FarmSection = Tabs.Main:AddSection("Rod Setting")
+local FarmSection = Tabs.Rod:AddSection("Rod Setting")
 
 local PathRod = workspace.PlayerStats[PlayerName].T[PlayerName].Rods
 local RodNames = {}
@@ -1673,7 +1674,7 @@ table.sort(RodNames, function(a, b)
     return a:lower() < b:lower()
 end)
 
-local SelectRodm = Tabs.Main:AddDropdown("SelectRodm", {
+local SelectRodm = Tabs.Rod:AddDropdown("SelectRodm", {
     Title = "Select Main Rod",
     Values = RodNames,
     Multi = false,
@@ -1685,7 +1686,7 @@ SelectRodm:OnChanged(function(value)
     getgenv().SaveSetting()
 end)
 
-local SelectRodsc = Tabs.Main:AddDropdown("SelectRodsc", {
+local SelectRodsc = Tabs.Rod:AddDropdown("SelectRodsc", {
     Title = "Select Scylla Rod",
     Values = RodNames,
     Multi = false,
@@ -1697,7 +1698,7 @@ SelectRodsc:OnChanged(function(value)
     getgenv().SaveSetting()
 end)
 
-local SelectRodmj = Tabs.Main:AddDropdown("SelectRodmj", {
+local SelectRodmj = Tabs.Rod:AddDropdown("SelectRodmj", {
     Title = "Select MossJaw Rod",
     Values = RodNames,
     Multi = false,
@@ -1709,7 +1710,7 @@ SelectRodmj:OnChanged(function(value)
     getgenv().SaveSetting()
 end)
 
-Tabs.Main:AddButton({
+Tabs.Rod:AddButton({
     Title = "Refresh Rod List",
     Description = "Refresh Rod List",
     Callback = function()
@@ -2610,7 +2611,3 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
-
-
-
-
