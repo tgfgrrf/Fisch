@@ -262,7 +262,7 @@ local Players = game:GetService("Players")
 spawn(function()
     while wait(1) do
         if tick() - Autokick > 1800 then
-            TeleportService:TeleportToPlaceInstance(game.placeId, game.JobId, Players.LocalPlayer)
+            TeleportService:TeleportToPlaceInstance(game.placeId)
         end
     end
 end)
@@ -2609,3 +2609,4 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
