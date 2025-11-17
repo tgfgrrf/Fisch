@@ -1201,7 +1201,6 @@ spawn(function()
                 end
             elseif shakeUi then
                 if not _G.Settings.Farm.Shake.Enable then return end
-                if not shakeUi then return end
                 repeat RunService.Heartbeat:Wait(ShakeDelay)
                     local safezone = shakeUi:FindFirstChild("safezone")
                     local button = safezone and safezone:FindFirstChild("button")
@@ -1212,8 +1211,9 @@ spawn(function()
                             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
                         end
                     end
+				    shakeUi = PlayerGui:FindFirstChild("shakeui")
                     reelUi = PlayerGui:FindFirstChild("reel")
-                until reelUi or not Ready or not shakeUi
+                until not shakeUi or reelUi or not Ready
             elseif reelUi and reelUi:FindFirstChild("bar") then
                 if not _G.Settings.Farm.Reel.Enable then return end
                 -- Reel()
@@ -2609,4 +2609,5 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
