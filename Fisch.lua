@@ -1167,6 +1167,7 @@ spawn(function()
             if not rodCharacter and rodTool then
                 print("Equipping rod:", rodValue)
                 Character.Humanoid:EquipTool(rodTool)
+				return
             end
 
             if not rodCharacter then
@@ -2609,6 +2610,7 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
