@@ -684,7 +684,7 @@ end)
 local function ChangRod(rodName)
     repeat task.wait() 
         game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
-    until LocalPLayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
+    until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
     print("ChangRod ",rodName)
 end
 
@@ -2609,5 +2609,6 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
 
