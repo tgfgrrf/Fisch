@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 4.0")
+print("Fisch Script Loaded Version 5.0")
 
 
 _G.Settings = {
@@ -666,7 +666,7 @@ local function ensureRod(rodName)
         repeat task.wait() 
             game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
         until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
-        print("Changed Rod ",rodName)
+        print("Change Rod Success",rodName)
         return
     end
 end
@@ -1131,7 +1131,7 @@ spawn(function()
 				    rodCharacter = Character:FindFirstChild(rodValue)
                     print("Equipped rod:", rodValue)
 				until rodCharacter or not Ready
-                print("Equipped rod Success:")
+                print("Equipped rod Successfully:", rodValue)
 				return
             end
 
