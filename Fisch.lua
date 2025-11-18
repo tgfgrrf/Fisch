@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.2")
+print("Fisch Script Loaded Version 1.3")
 local AutoAurora = true
 local AutoKickSer = false
 _G.Settings = {
@@ -1273,7 +1273,10 @@ spawn(function()
                         repeat task.wait(1)
                         until Checkweather() or not AutoAurora or not Ready
                     else
-                        Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Aurora Totem"))
+                        local auroraTool = LocalPlayer.Backpack:FindFirstChild("Aurora Totem")
+                        if auroraTool and Character:FindFirstChild("Humanoid") then
+                            Character.Humanoid:EquipTool(auroraTool)
+                        end
                     end
                 else
                     if Character:FindFirstChild("Sundial Totem") then
@@ -1281,7 +1284,10 @@ spawn(function()
                         repeat task.wait(1)
                         until CheckDayNight() == "Night" or not AutoAurora or not Ready
                     else
-                        Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Sundial Totem"))
+                        local sundialTool = LocalPlayer.Backpack:FindFirstChild("Sundial Totem")
+                        if sundialTool and Character:FindFirstChild("Humanoid") then
+                            Character.Humanoid:EquipTool(sundialTool)
+                        end
                     end
                 end
             end
