@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.4")
+print("Fisch Script Loaded Version 1.5")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -2748,4 +2748,5 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
