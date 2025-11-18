@@ -1,6 +1,6 @@
 
 print("Fisch Script Loaded Version 1.4")
-local AutoAurora = true
+local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
     Farm = {
