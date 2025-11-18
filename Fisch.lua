@@ -1117,7 +1117,7 @@ spawn(function()
             local rodTool = LocalPlayer.Backpack:FindFirstChild(rodValue)
             local ShakeDelay = _G.Settings.Farm.Shake.Delay
             local CastMode = _G.Settings.Farm.Cast.Mode
-
+            local Checkbob = tick()
             if not rodCharacter and rodTool then
 				repeat task.wait()
                     Character.Humanoid:EquipTool(rodTool)
@@ -1136,35 +1136,35 @@ spawn(function()
             local bobber = rodCharacter:FindFirstChild("bobber")
             local shakeUi = PlayerGui:FindFirstChild("shakeui")
             local reelUi = PlayerGui:FindFirstChild("reel")
-            if not shakeUi then
+            if not bobber then
                 if Rellconnect then 
                     Rellconnect:Disconnect() 
                     Rellconnect = nil
                     print("Discon ",Rellconnect)
                 end
-                local Checkbob = tick()
+                
                 if not _G.Settings.Farm.Cast.Enable then return end
-                if not bobber then
-                    local Resault
-                    if CastMode == "Perfect" then
-                        Resault = 100
-                    elseif CastMode == "Random" then
-                        Resault = math.random(70,100)
-                    else
-                        Resault = 100
-                    end
-                    ReplicatedStorage.events.CancelEmote:FireServer()
-                    task.wait(0.5)
-                    if rodCharacter:FindFirstChild("events") then
-                        rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
-                    else
-                        warn("castAsync event not found")
-                    end
-                elseif bobber and not shakeUi then
-                    if tick() - Checkbob > 10 then
-                        print("Bobber not detected, resetting rod.")
-                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(rodValue).events.reset:FireServer()
-                    end
+                
+                local Resault
+                if CastMode == "Perfect" then
+                    Resault = 100
+                elseif CastMode == "Random" then
+                    Resault = math.random(70,100)
+                else
+                    Resault = 100
+                end
+                ReplicatedStorage.events.CancelEmote:FireServer()
+                task.wait(0.5)
+                if rodCharacter:FindFirstChild("events") then
+                    rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
+                else
+                    warn("castAsync event not found")
+                end
+            elseif bobber and not shakeUi then
+                if tick() - Checkbob > 10 then
+                    print("Bobber not detected, resetting rod.")
+                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(rodValue).events.reset:FireServer()
+                    Checkbob = tick()
                 end
             elseif shakeUi then
                 if not _G.Settings.Farm.Shake.Enable then return end
