@@ -1,3 +1,7 @@
+
+print("Fisch Script Loaded Version 1.0.3")
+
+
 _G.Settings = {
     Farm = {
         Position = {},
@@ -1144,7 +1148,6 @@ spawn(function()
                 end
                 
                 if not _G.Settings.Farm.Cast.Enable then return end
-                
                 local Resault
                 if CastMode == "Perfect" then
                     Resault = 100
@@ -1160,12 +1163,12 @@ spawn(function()
                 else
                     warn("castAsync event not found")
                 end
-            elseif bobber and not shakeUi then
-                if tick() - Checkbob > 10 then
-                    print("Bobber not detected, resetting rod.")
-                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(rodValue).events.reset:FireServer()
-                    Checkbob = tick()
-                end
+                --  elseif bobber and not shakeUi then
+                -- if tick() - Checkbob > 10 then
+                --     print("Bobber not detected, resetting rod.")
+                --     game:GetService("Players").LocalPlayer.Character:FindFirstChild(rodValue).events.reset:FireServer()
+                --     Checkbob = tick()
+                -- end
             elseif shakeUi then
                 if not _G.Settings.Farm.Shake.Enable then return end
                 repeat RunService.Heartbeat:Wait(ShakeDelay)
