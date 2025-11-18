@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.6")
+print("Fisch Script Loaded Version 1.7")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1264,6 +1264,15 @@ local function CheckRainBow()
         return false
     end
 end
+
+spawn(function()
+  while wait() do
+    if Ready then
+      print("Ready")
+      task.wait(10)
+    end
+  end
+end)
 
 local lastCheck = 0
 local RESET_TIME = 10
@@ -2751,6 +2760,7 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
 
 
