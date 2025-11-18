@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.0.1")
+print("Fisch Script Loaded Version 1.2")
 local AutoAurora = true
 local AutoKickSer = false
 _G.Settings = {
@@ -1363,19 +1363,33 @@ spawn(function()
                             
                             if fish and playerbar and fish:IsA("GuiObject") and playerbar:IsA("GuiObject") then
                                 if _G.Settings.Farm.Reel.Enable then
-                                    if Bar == "Center" then
-                                        repeat RunService.Heartbeat:Wait()
-                                            playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
-                                            local prog = GetProgressBarScale()
-                                            if prog and prog >= Sls then
-                                                pcall(function()
-                                                    ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                                    task.wait(0.5)
-                                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
-                                                end)
-                                            end
-                                        until not playerGui:FindFirstChild("reel") or not Ready
-                                    elseif Bar == "Large" then
+                                    if RodState ~= "Tryhard Rod" then
+                                        if Bar == "Center" then
+                                            repeat RunService.Heartbeat:Wait()
+                                                playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
+                                                local prog = GetProgressBarScale()
+                                                if prog and prog >= Sls then
+                                                    pcall(function()
+                                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                        task.wait(0.5)
+                                                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                    end)
+                                                end
+                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Center" or not Ready
+                                        elseif Bar == "Large" then
+                                            repeat RunService.Heartbeat:Wait()
+                                                playerbar.Size = UDim2.fromScale(1,1)
+                                                local prog = GetProgressBarScale()
+                                                if prog and prog >= Sls then
+                                                    pcall(function()
+                                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
+                                                        task.wait(0.5)
+                                                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
+                                                    end)
+                                                end
+                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Large" or not Ready
+                                        end
+                                    else
                                         repeat RunService.Heartbeat:Wait()
                                             playerbar.Size = UDim2.fromScale(1,1)
                                             local prog = GetProgressBarScale()
@@ -1386,7 +1400,7 @@ spawn(function()
                                                     game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
                                                 end)
                                             end
-                                        until not playerGui:FindFirstChild("reel") or not Ready
+                                        until not playerGui:FindFirstChild("reel") or RodState ~= "Tryhard Rod" or not Ready
                                     end
                                 end
                             end
