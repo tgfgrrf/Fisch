@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 2.0")
+print("Fisch Script Loaded Version 3.0")
 
 
 _G.Settings = {
@@ -645,10 +645,10 @@ end)
 
 
 local function ChangRod(rodName)
-    repeat task.wait() 
-        game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
-    until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
-    print("ChangRod ",rodName)
+   repeat task.wait() 
+            game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
+        until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
+        print("Changed Rod ",rodName)
     return
 end
 
@@ -663,7 +663,10 @@ local function ensureRod(rodName)
     local Backpack = LocalPlayer:WaitForChild("Backpack")
     if not Backpack:FindFirstChild(rodName) and not Character:FindFirstChild(rodName) then
         print("Ensure : ",rodName)
-        ChangRod(rodName)
+        repeat task.wait() 
+            game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
+        until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
+        print("Changed Rod ",rodName)
         return
     end
 end
