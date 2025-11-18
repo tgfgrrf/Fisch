@@ -1120,10 +1120,11 @@ spawn(function()
 
             if not rodCharacter and rodTool then
 				repeat task.wait()
-                     Character.Humanoid:EquipTool(rodTool)
-				     rodCharacter = Character:FindFirstChild(rodValue)
+                    Character.Humanoid:EquipTool(rodTool)
+				    rodCharacter = Character:FindFirstChild(rodValue)
+                    print("Equipped rod:", rodValue)
 				until rodCharacter or not Ready
-				print("Equipped rod:", rodValue)
+                print("Equipped rod Success:")
 				return
             end
 
