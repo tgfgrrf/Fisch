@@ -262,7 +262,7 @@ local Players = game:GetService("Players")
 spawn(function()
     while wait(1) do
         if tick() - Autokick > 1800 then
-            TeleportService:TeleportToPlaceInstance(game.placeId)
+            game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end
 end)
@@ -287,48 +287,6 @@ local function TPB(...)
         RealTarget = CFrame.new(args[1], args[2], args[3])
     end
 
-    local player = Players.LocalPlayer
-    local character = player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then
-        character = player.CharacterAdded:Wait()
-    end
-
-    local humanoid = character:WaitForChild("Humanoid")
-    local root = character:WaitForChild("HumanoidRootPart")
-
-    -- === RESPAWN HANDLER ===
-    local function waitForRespawn()
-        if humanoid.Health > 0 then return end
-        repeat task.wait() until player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0
-        task.wait(0.2)
-        character = player.Character
-        humanoid = character:WaitForChild("Humanoid")
-        root = character:WaitForChild("HumanoidRootPart")
-    end
-
-    waitForRespawn()  -- Ensure alive
-
-    -- === BOAT MODE ===
-    if _G.Settings and _G.Settings.Farm and _G.Settings.Farm.EnableBoat and humanoid.Sit then
-        local boatFolder = Workspace:FindFirstChild("active") and Workspace.active:FindFirstChild("boats") and Workspace.active.boats:FindFirstChild(player.Name)
-        if not boatFolder then
-            warn("TPB: Boat folder not found for player")
-            return
-        end
-
-        local selectedBoatName = _G.Settings.Farm.SelectBoat
-        local boat = boatFolder:FindFirstChild(selectedBoatName)
-        if not boat then
-            return
-        end
-
-        local base = boat:FindFirstChild("owner")
-        
-        if not base or not base:IsA("VehicleSeat") then
-            return
-        end
-        base.CFrame = RealTarget * CFrame.new(0,-3,0)
-    end
 end
 
 local function TP(...)
@@ -687,6 +645,7 @@ local function ChangRod(rodName)
         game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
     until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
     print("ChangRod ",rodName)
+    return
 end
 
 local function CheckInventory(itemName)
@@ -701,6 +660,7 @@ local function ensureRod(rodName)
     if not Backpack:FindFirstChild(rodName) and not Character:FindFirstChild(rodName) then
         print("Ensure : ",rodName)
         ChangRod(rodName)
+        return
     end
 end
 
@@ -728,13 +688,6 @@ local function TeleportMode()
     elseif Mode == "Save Position" then
         Status:SetTitle("Status : Farm Save Position")
         return savedPosition
-    else
-        if not getgenv().rememberPosition ~= nil then
-            Status:SetTitle("Status : Farm Remember Position")
-            return CFrame.new(getgenv().rememberPosition)
-        else
-            getgenv().rememberPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-        end
     end
 end
 
@@ -1220,6 +1173,7 @@ spawn(function()
 				    shakeUi = PlayerGui:FindFirstChild("shakeui")
                     reelUi = PlayerGui:FindFirstChild("reel")
                 until not shakeUi or reelUi or not Ready
+                return
             elseif reelUi and reelUi:FindFirstChild("bar") then
                 if not _G.Settings.Farm.Reel.Enable then return end
                 -- Reel()
@@ -2046,7 +2000,7 @@ Tabs.Teleport:AddButton({
     Title = "Rejoin Server",
     Description = "Rejoin Your Server",
     Callback = function()
-       rejoinServer()
+       game:GetService("TeleportService"):Teleport(game.PlaceId)
     end
 })
 
@@ -2615,5 +2569,4 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
-
 
