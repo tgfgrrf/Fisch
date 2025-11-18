@@ -1,7 +1,7 @@
 
-print("Fisch Script Loaded Version 7.0")
-
-
+print("Fisch Script Loaded Version 1.0.1")
+local AutoAurora = true
+local AutoKickSer = false
 _G.Settings = {
     Farm = {
         Position = {},
@@ -28,9 +28,9 @@ _G.Settings = {
         },
 
         Rod = {
-            FarmRod = "",
-            ScyllaRod = "",
-            MossjawRod = ""
+            FarmRod = "Flimsy Rod",
+            ScyllaRod = "Flimsy Rod",
+            MossjawRod = "Flimsy Rod"
         },
     },
 
@@ -298,11 +298,32 @@ task.spawn(function()
     while wait() do
         game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
             if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
-                TPReturner()
+                Teleport()
             end
         end)
     end
 end)
+
+
+
+local Autokick = tick()
+local TS = game:GetService("TeleportService")
+local PL = game:GetService("Players")
+spawn(function()
+    while task.wait(1) do
+        if AutoKickSer and (tick() - Autokick > 1800) then
+            local ok, err = pcall(function()
+               Teleport()
+            end)
+            if not ok then
+                warn("TPReturner error:", err)
+            else
+                Autokick = tick() -- reset timestamp after a successful attempt to avoid spamming
+            end
+        end
+    end
+end)
+
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -329,17 +350,6 @@ local Signals = {
 getgenv().rememberPosition = nil
 print(getgenv().rememberPosition)
 
-local Autokick = tick()
-
-local TeleportService = game:GetService("TeleportService")
-local Players = game:GetService("Players")
-spawn(function()
-    while wait(1) do
-        if tick() - Autokick > 1800 then
-            TPReturner()
-        end
-    end
-end)
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -756,6 +766,9 @@ local function TeleportMode()
     if Mode == "Trash" then
         Status:SetTitle("Status : Farm Trash")
         return CFrame.new(-1143.84082, 134.632812, -1080.47131, 0.986154318, 7.84733611e-09, -0.165830299, -1.20236212e-08, 1, -2.4180201e-08, 0.165830299, 2.58392898e-08, 0.986154318)
+    elseif Mode == "Money" then
+        Status:SetTitle("Status : Farm Money")
+        return 4318.6123, -2009.00012, -4708.3877, -0.99999994, 3.44392426e-09, 0.000401143276, 3.44219631e-09, 1, -4.30829816e-09, -0.000401143276, -4.30691705e-09, -0.99999994
     elseif Mode == "Level" then
         Status:SetTitle("Status : Farm Level")
         return CFrame.new(1376.12842, -603.603577, 2337.55347, 0.945005476, -3.90646875e-08, -0.32705453, 4.45639081e-08, 1, 9.32092448e-09, 0.32705453, -2.33831532e-08, 0.945005476)
@@ -877,6 +890,40 @@ local function CheckBoss2()
     return nil
     
 end
+
+
+local function CheckAuroraTotem()
+    AuroraTotem = LocalPlayer.Backpack:FindFirstChild("Aurora Totem") or Character:FindFirstChild("Aurora Totem")
+    if AuroraTotem then
+        return true
+    else
+        return false
+    end
+end
+
+local function Checkweather()
+    local WorldFolder = ReplicatedStorage:WaitForChild("world")
+    local WeatherValue = WorldFolder:WaitForChild("weather").Value
+    if WeatherValue:match("Aurora") then
+        return true
+    else
+        return false
+    end
+end
+
+local function CheckDayNight()
+    local WorldFolder = ReplicatedStorage:WaitForChild("world")
+    local CycleValue = WorldFolder:WaitForChild("cycle").Value
+    if CycleValue == "Day" then
+        return "Day"
+    elseif CycleValue == "Night" then
+        return "Night"
+    else
+        return "Dusk"
+    end
+end
+
+
 
 spawn(function()
 
@@ -1154,9 +1201,12 @@ spawn(function()
                         Status:SetTitle("Status : Re Day Find Boss")
                         if not WeatherValue:match("Aurora") then
                             if EquippedTotem then
-                                ActivateTotem()
-                                currentCycle = CycleValue
-                                repeat task.wait(1) until CycleValue ~= currentCycle or not Settings.Farm.Enable or Boss.Mode ~= "Re Day"
+                                local currentCycle = CycleValue
+                                EquippedTotem:Activate()
+                                repeat
+                                    task.wait(1)
+                                    CycleValue = WorldFolder:WaitForChild("cycle").Value
+                                until CycleValue ~= currentCycle or not Settings.Farm.Enable or Boss.Mode ~= "Re Day"
                             else
                                 Humanoid:EquipTool(Totem)
                             end
@@ -1180,6 +1230,25 @@ spawn(function()
     end)
 end)
 
+local function CheckSundialTotem()
+    SundialTotem = LocalPlayer.Backpack:FindFirstChild("Sundial Totem") or Character:FindFirstChild("Sundial Totem")
+    if SundialTotem then
+        return true
+    else
+        return false
+    end
+end
+
+local function CheckRainBow()
+    local WorldFolder = ReplicatedStorage:WaitForChild("world")
+    local WeatherValue = WorldFolder:WaitForChild("weather").Value
+    if WeatherValue:match("Rainbow") then
+        return true
+    else
+        return false
+    end
+end
+
 local lastCheck = 0
 local RESET_TIME = 10
 spawn(function()
@@ -1195,6 +1264,27 @@ spawn(function()
             local rodTool = LocalPlayer.Backpack:FindFirstChild(rodValue)
             local ShakeDelay = _G.Settings.Farm.Shake.Delay
             local CastMode = _G.Settings.Farm.Cast.Mode
+
+
+            if AutoAurora and CheckAuroraTotem() and CheckSundialTotem() and not Checkweather() and not CheckRainBow() then
+                if CheckDayNight() == "Night" then
+                    if Character:FindFirstChild("Aurora Totem") then
+                        Character:FindFirstChild("Aurora Totem"):Activate()
+                        repeat task.wait(1)
+                        until Checkweather() or not AutoAurora or not Ready
+                    else
+                        Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Aurora Totem"))
+                    end
+                else
+                    if Character:FindFirstChild("Sundial Totem") then
+                        Character:FindFirstChild("Sundial Totem"):Activate()
+                        repeat task.wait(1)
+                        until CheckDayNight() == "Night" or not AutoAurora or not Ready
+                    else
+                        Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild("Sundial Totem"))
+                    end
+                end
+            end
             
             if not rodCharacter and rodTool then
 				repeat task.wait()
@@ -1317,7 +1407,7 @@ local FarmSection = Tabs.Main:AddSection("Setting Farm")
 
 local Mfv = Tabs.Main:AddDropdown("Mfv", {
     Title = "Select Mode Farm",
-    Values = {"Trash","Level","Enchant Relic","Save Position","Freez"},
+    Values = {"Money","Trash","Level","Enchant Relic","Save Position","Freez"},
     Multi = false,
     Default = _G.Settings.Farm.Mode,
 })
