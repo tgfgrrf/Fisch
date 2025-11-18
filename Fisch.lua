@@ -1,6 +1,6 @@
 
-print("Fisch Script Loaded Version 1.3")
-local AutoAurora = false
+print("Fisch Script Loaded Version 1.4")
+local AutoAurora = true
 local AutoKickSer = false
 _G.Settings = {
     Farm = {
@@ -638,7 +638,23 @@ local Status = Tabs.Main:AddParagraph({
     Title = "Status : N/A"
 })
 
+local tmme = Tabs.Main:AddParagraph({
+    Title = ""
+})
 
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            local scripttime = game.Workspace.DistributedGameTime
+            local seconds = scripttime%60
+            local minutes = math.floor(scripttime/60%60)
+            local hours = math.floor(scripttime/3600)
+            local tempo = string.format("%.0f Hour , %.0f Minute , %.0f Second", hours ,minutes, seconds)
+            tmme:SetTitle(tempo)
+        end)
+    end
+end)
 
 local FarmSection = Tabs.Main:AddSection("Main")
 
@@ -1269,8 +1285,8 @@ spawn(function()
             if AutoAurora and CheckAuroraTotem() and CheckSundialTotem() and not Checkweather() and not CheckRainBow() then
                 if CheckDayNight() == "Night" then
                     if Character:FindFirstChild("Aurora Totem") then
-                        Character:FindFirstChild("Aurora Totem"):Activate()
                         repeat task.wait(1)
+                            Character:FindFirstChild("Aurora Totem"):Activate()
                         until Checkweather() or not AutoAurora or not Ready
                     else
                         local auroraTool = LocalPlayer.Backpack:FindFirstChild("Aurora Totem")
@@ -1280,8 +1296,8 @@ spawn(function()
                     end
                 else
                     if Character:FindFirstChild("Sundial Totem") then
-                        Character:FindFirstChild("Sundial Totem"):Activate()
                         repeat task.wait(1)
+                            Character:FindFirstChild("Sundial Totem"):Activate()
                         until CheckDayNight() == "Night" or not AutoAurora or not Ready
                     else
                         local sundialTool = LocalPlayer.Backpack:FindFirstChild("Sundial Totem")
@@ -2732,5 +2748,4 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
-
 
