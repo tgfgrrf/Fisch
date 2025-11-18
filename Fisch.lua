@@ -1166,8 +1166,11 @@ spawn(function()
             local CastMode = _G.Settings.Farm.Cast.Mode
 
             if not rodCharacter and rodTool then
-                print("Equipping rod:", rodValue)
-                Character.Humanoid:EquipTool(rodTool)
+				repeat task.wait()
+                     Character.Humanoid:EquipTool(rodTool)
+				     rodCharacter = Character:FindFirstChild(rodValue)
+				until rodCharacter or not Ready
+				print("Equipped rod:", rodValue)
 				return
             end
 
@@ -1200,6 +1203,7 @@ spawn(function()
                     rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
                 else
                     warn("castAsync event not found")
+					return
                 end
             elseif shakeUi then
                 if not _G.Settings.Farm.Shake.Enable then return end
@@ -2611,4 +2615,5 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
