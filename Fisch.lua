@@ -265,7 +265,7 @@ local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 spawn(function()
     while wait(1) do
-        if tick() - Autokick > 1800 then
+        if tick() - Autokick > 1200 then
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end
@@ -2586,4 +2586,5 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
