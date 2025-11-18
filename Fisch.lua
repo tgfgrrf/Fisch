@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.5")
+print("Fisch Script Loaded Version 1.6")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1309,6 +1309,7 @@ spawn(function()
             end
             
             if not rodCharacter and rodTool then
+				print("Equiping Rod : ",rodValue)
 				repeat task.wait()
                     Character.Humanoid:EquipTool(rodTool)
 				    rodCharacter = Character:FindFirstChild(rodValue)
@@ -1339,6 +1340,7 @@ spawn(function()
                 ReplicatedStorage.events.CancelEmote:FireServer()
                 task.wait(0.5)
                 if rodCharacter:FindFirstChild("events") then
+							print("cast")
                     rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
                 else
                     warn("castAsync event not found")
@@ -1354,6 +1356,7 @@ spawn(function()
                         if GuiService.SelectedObject == button then
                             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
                             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+									print("shake")
                         end
                     end
                     shakeUi = PlayerGui:FindFirstChild("shakeui")
@@ -2748,5 +2751,6 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
+
 
 
