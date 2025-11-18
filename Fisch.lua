@@ -1159,9 +1159,8 @@ spawn(function()
                         rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
                     else
                         warn("castAsync event not found")
-                        return
                     end
-                elseif bobber then
+                elseif bobber and not shakeUi then
                     if tick() - Checkbob > 10 then
                         print("Bobber not detected, resetting rod.")
                         game:GetService("Players").LocalPlayer.Character:FindFirstChild(rodValue).events.reset:FireServer()
@@ -1182,7 +1181,6 @@ spawn(function()
 				    shakeUi = PlayerGui:FindFirstChild("shakeui")
                     reelUi = PlayerGui:FindFirstChild("reel")
                 until not shakeUi or reelUi or not Ready
-                return
             elseif reelUi and reelUi:FindFirstChild("bar") then
                 if not _G.Settings.Farm.Reel.Enable then return end
                 -- Reel()
