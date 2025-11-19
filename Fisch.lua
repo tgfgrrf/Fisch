@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.9")
+print("Fisch Script Loaded Version 2.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1297,7 +1297,7 @@ local RESET_TIME = 10
 spawn(function()
     while RunService.Heartbeat:Wait() do
         if not getgenv().Ready then 
-            return
+            continue
         end
         
         local success, result = pcall(function()
