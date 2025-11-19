@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.8")
+print("Fisch Script Loaded Version 1.9")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -639,6 +639,22 @@ local FarmSection = Tabs.Main:AddSection("Status")
 local Status = Tabs.Main:AddParagraph({
     Title = "Status : N/A"
 })
+
+local tmsme = Tabs.Main:AddParagraph({
+    Title = "Status Ready : N/A"
+})
+
+spawn(function()
+    while wait(1) do
+        pcall(function()
+            if getgenv().Ready then
+                tmsme:SetTitle("Status Ready : True")
+            else
+                tmsme:SetTitle("Status Ready : False")
+            end
+        end)
+    end
+end)
 
 local tmme = Tabs.Main:AddParagraph({
     Title = ""
