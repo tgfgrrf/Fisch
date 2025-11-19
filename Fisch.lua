@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 1.7")
+print("Fisch Script Loaded Version 1.8")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -338,6 +338,8 @@ local HttpService = game:GetService("HttpService")
 local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 
+getgenv().Ready = false
+
 local PlayerName = LocalPlayer.Name
 
 local Signals = {
@@ -520,7 +522,7 @@ local function Reel()
     end
 end
 
-local Ready = false
+
 
 
 
@@ -833,7 +835,7 @@ local function handleBossTarget(name, targetCFrame, distanceThreshold, platformS
     end
 
     if distance < distanceThreshold then
-        Ready = true
+        getgenv().Ready = true
     end
 end
 
@@ -856,7 +858,7 @@ local function handleBossTargetB(name, targetCFrame, distanceThreshold, platform
     end
 
     if distance < distanceThreshold then
-        Ready = true
+        getgenv().Ready = true
     end
 end
 
@@ -1052,7 +1054,7 @@ spawn(function()
 
     RunService.Heartbeat:Connect(function()
         if not _G.Settings.Farm.Enable then
-            Ready = false
+            getgenv().Ready = false
             return
         end
 
@@ -1160,7 +1162,7 @@ spawn(function()
                                         rememberPosition()
                                         AutoFreeze = true
                                     end
-                                    Ready = true
+                                    getgenv().Ready = true
                                 end
                             else
                                 ensureRod(ROD_MAIN)
@@ -1173,7 +1175,7 @@ spawn(function()
                                     rememberPosition()
                                     AutoFreeze = true
                                 end
-                                Ready = true
+                                getgenv().Ready = true
                             end
                         else
                             ensureRod(ROD_MAIN)
@@ -1186,7 +1188,7 @@ spawn(function()
                                 rememberPosition()
                                 AutoFreeze = true
                             end
-                            Ready = true
+                            getgenv().Ready = true
                         end
                     end
                 end
@@ -1229,17 +1231,17 @@ spawn(function()
                         else
                             ensureRod(ROD_MAIN)
                             TP(TeleportMode())
-                            Ready = true
+                            getgenv().Ready = true
                         end
                     else
                         ensureRod(ROD_MAIN)
                         TP(TeleportMode())
-                        Ready = true
+                        getgenv().Ready = true
                     end
                 else
                     ensureRod(ROD_MAIN)
                     TP(TeleportMode())
-                    Ready = true
+                    getgenv().Ready = true
                 end
             end
         end, warn)
@@ -1267,8 +1269,8 @@ end
 
 spawn(function()
   while wait() do
-    if Ready then
-      print("Ready")
+    if getgenv().Ready then
+      print("getgenv().Ready")
       task.wait(10)
     end
   end
@@ -1278,8 +1280,8 @@ local lastCheck = 0
 local RESET_TIME = 10
 spawn(function()
     while RunService.Heartbeat:Wait() do
-        if not Ready then 
-            continue 
+        if not getgenv().Ready then 
+            return
         end
         
         local success, result = pcall(function()
@@ -1296,7 +1298,7 @@ spawn(function()
                     if Character:FindFirstChild("Aurora Totem") then
                         repeat task.wait(1)
                             Character:FindFirstChild("Aurora Totem"):Activate()
-                        until Checkweather() or not AutoAurora or not Ready
+                        until Checkweather() or not AutoAurora or not getgenv().Ready
                     else
                         local auroraTool = LocalPlayer.Backpack:FindFirstChild("Aurora Totem")
                         if auroraTool and Character:FindFirstChild("Humanoid") then
@@ -1307,7 +1309,7 @@ spawn(function()
                     if Character:FindFirstChild("Sundial Totem") then
                         repeat task.wait(1)
                             Character:FindFirstChild("Sundial Totem"):Activate()
-                        until CheckDayNight() == "Night" or not AutoAurora or not Ready
+                        until CheckDayNight() == "Night" or not AutoAurora or not getgenv().Ready
                     else
                         local sundialTool = LocalPlayer.Backpack:FindFirstChild("Sundial Totem")
                         if sundialTool and Character:FindFirstChild("Humanoid") then
@@ -1323,7 +1325,7 @@ spawn(function()
                     Character.Humanoid:EquipTool(rodTool)
 				    rodCharacter = Character:FindFirstChild(rodValue)
                     print("Equipped rod:", rodValue)
-				until rodCharacter or not Ready
+				until rodCharacter or not getgenv().Ready
                 print("Equipped rod Successfully:", rodValue)
 				return
             end
@@ -1370,7 +1372,7 @@ spawn(function()
                     end
                     shakeUi = PlayerGui:FindFirstChild("shakeui")
                     reelUi = PlayerGui:FindFirstChild("reel")
-                until not shakeUi or reelUi or not Ready
+                until not shakeUi or reelUi or not getgenv().Ready
             end
             if reelUi and reelUi:FindFirstChild("bar") then
                 if not _G.Settings.Farm.Reel.Enable then return end
@@ -1409,7 +1411,7 @@ spawn(function()
                                                         game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
                                                     end)
                                                 end
-                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Center" or not Ready
+                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Center" or not getgenv().Ready
                                         elseif Bar == "Large" then
                                             repeat RunService.Heartbeat:Wait()
                                                 playerbar.Size = UDim2.fromScale(1,1)
@@ -1421,7 +1423,7 @@ spawn(function()
                                                         game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
                                                     end)
                                                 end
-                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Large" or not Ready
+                                            until not playerGui:FindFirstChild("reel") or Bar ~= "Large" or not getgenv().Ready
                                         end
                                     else
                                         repeat RunService.Heartbeat:Wait()
@@ -1434,7 +1436,7 @@ spawn(function()
                                                     game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
                                                 end)
                                             end
-                                        until not playerGui:FindFirstChild("reel") or RodState ~= "Tryhard Rod" or not Ready
+                                        until not playerGui:FindFirstChild("reel") or RodState ~= "Tryhard Rod" or not getgenv().Ready
                                     end
                                 end
                             end
@@ -2760,7 +2762,6 @@ Fluent:Notify({
 })
 
 SaveManager:LoadAutoloadConfig()
-
 
 
 
