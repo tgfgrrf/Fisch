@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 3.0")
+print("Fisch Script Loaded Version 4.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -66,12 +66,31 @@ end
 
 print(game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled)
 
+
+
+
 repeat wait() until game:IsLoaded()
 repeat wait() until game.Players.LocalPlayer
 local plr = game.Players.LocalPlayer
 repeat wait() until plr.Character
 repeat wait() until plr.Character:FindFirstChild("HumanoidRootPart")
 repeat wait() until plr.Character:FindFirstChild("Humanoid")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local CollectionService = game:GetService("CollectionService")
+local HttpService = game:GetService("HttpService")
+local Client = Players.LocalPlayer
+-- Folder
+local PlayersStats = Workspace:WaitForChild("PlayerStats")
+local Player_Folder = PlayersStats:WaitForChild(Client.Name)
+local Data = Player_Folder:WaitForChild("T"):WaitForChild(Client.Name)
+
+repeat task.wait() 
+    PlayersStats = Workspace:WaitForChild("PlayerStats",3) print(PlayersStats)
+    Player_Folder = PlayersStats:WaitForChild(Client.Name,3) print(Player_Folder)
+    Data = Player_Folder:WaitForChild("T"):WaitForChild(Client.Name,3) print(Data)
+until Data
 repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
 
 
@@ -1433,21 +1452,15 @@ spawn(function()
                     -- end
                 end
                 
-                if not rodCharacter and rodTool then
-                    print("Equiping Rod : ",rodValue)
+                if not rodCharacter then
                     repeat task.wait()
+                        print("Equiping Rod : ",rodValue)
                         Character.Humanoid:EquipTool(rodTool)
                         rodCharacter = Character:FindFirstChild(rodValue)
-                        print("Equipped rod:", rodValue)
                     until rodCharacter or not getgenv().Ready
                     print("Equipped rod Successfully:", rodValue)
-                    return
                 end
 
-                if not rodCharacter then
-                    warn("Rod not found")
-                    return
-                end
 
                 local bobber = rodCharacter:FindFirstChild("bobber")
                 local shakeUi = PlayerGui:FindFirstChild("shakeui")
