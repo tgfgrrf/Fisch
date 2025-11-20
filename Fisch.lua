@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 4.0")
+print("Fisch Script Loaded Version 5.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1453,12 +1453,19 @@ spawn(function()
                 end
                 
                 if not rodCharacter then
-                    repeat task.wait()
-                        print("Equiping Rod : ",rodValue)
-                        Character.Humanoid:EquipTool(rodTool)
-                        rodCharacter = Character:FindFirstChild(rodValue)
-                    until rodCharacter or not getgenv().Ready
-                    print("Equipped rod Successfully:", rodValue)
+                    -- repeat task.wait()
+                    --     print("Equiping Rod : ",rodValue)
+                    --     Character.Humanoid:EquipTool(rodTool)
+                    --     rodCharacter = Character:FindFirstChild(rodValue)
+                    -- until rodCharacter or not getgenv().Ready
+                    -- print("Equipped rod Successfully:", rodValue)
+                    local backpack = LocalPlayer:WaitForChild("Backpack")
+                    for _, item in pairs(backpack:GetChildren()) do
+                        if item:IsA("Tool") and item.Name == rodValue then
+                            item.Parent = LocalPlayer.Character
+                            print(rodValue .. " equipped.")
+                        end
+                    end
                 end
 
 
