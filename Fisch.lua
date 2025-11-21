@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 7.0")
+print("Fisch Script Loaded Version 9.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -7,7 +7,7 @@ _G.Settings = {
         Position = {},
         Mode = "Save Position",--"Trash","Level","Enchant Relic","Save Position","Freez"
         SelectBoat = "",
-        EnableBoat = true,
+        EnableBoat = false,
         Enable = false,
 
         Cast = {
@@ -1310,16 +1310,6 @@ local function CheckRainBow()
     end
 end
 
-spawn(function()
-  while wait() do
-    if getgenv().Ready then
-      print("getgenv().Ready")
-      task.wait(10)
-    end
-  end
-end)
-
-
 local function equipTool(toolName)
 	local backpack = LocalPlayer:WaitForChild("Backpack")
 	for _, item in pairs(backpack:GetChildren()) do
@@ -1362,6 +1352,87 @@ local RESET_TIME = 10
 spawn(function()
     while RunService.Heartbeat:Wait() do
         if getgenv().Ready then 
+
+            local BOSS_TARGETS = {
+                ["Elder Mossjaw"] = {
+                    cframe = CFrame.new(-4861.78271, -1793.96008, -10126.1406, 0.999018729, 9.09287579e-08, -0.0442892015, -9.21281185e-08, 1, -2.50390126e-08, 0.0442892015, 2.90947231e-08, 0.999018729),
+                    threshold = 10
+                },
+                ["MossjawHunt"] = {
+                    cframe = CFrame.new(-4861.78271, -1793.96008, -10126.1406, 0.999018729, 9.09287579e-08, -0.0442892015, -9.21281185e-08, 1, -2.50390126e-08, 0.0442892015, 2.90947231e-08, 0.999018729),
+                    threshold = 10
+                },
+                ["Forsaken Veil - Scylla"] = {
+                    cframe = CFrame.new(-2508.34229, -11224.4805, 6893.28467, -0.0316809788, -3.53211824e-08, -0.99949801, 2.09912301e-08, 1, -3.60042769e-08, 0.99949801, -2.21213448e-08, -0.0316809788),
+                    threshold = 10
+                },
+                ["Megalodon Default"] = {
+                    offset = Vector3.new(0, 20, 0),
+                    zone = "Megalodon Default",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Megalodon Ancient"] = {
+                    offset = Vector3.new(0, 20, 0),
+                    zone = "Megalodon Ancient",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["The Kraken Pool"] = {
+                    offset = Vector3.new(0, 70, 0),
+                    zone = "The Kraken Pool",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Ancient Kraken Pool"] = {
+                    offset = Vector3.new(0, 70, 0),
+                    zone = "Ancient Kraken Pool",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Orcas Pool"] = {
+                    offset = Vector3.new(0, 90, 0),
+                    zone = "Orcas Pool",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Ancient Orcas Pool"] = {
+                    offset = Vector3.new(0, 90, 0),
+                    zone = "Ancient Orcas Pool",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["FischFright25"] = {
+                    offset = Vector3.new(0, 80, 0),
+                    zone = "FischFright25",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Whales Pool"] = {
+                    offset = Vector3.new(0, 80, 0),
+                    zone = "Whales Pool",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Colossal Blue Dragon"] = {
+                    offset = Vector3.new(0, -10, 0),
+                    zone = "Colossal Blue Dragon",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Colossal Ethereal Dragon"] = {
+                    offset = Vector3.new(0, -10, 0),
+                    zone = "Colossal Ethereal Dragon",
+                    threshold = 10,
+                    platformStand = true
+                },
+                ["Colossal Ancient Dragon"] = {
+                    offset = Vector3.new(0, -10, 0),
+                    zone = "Colossal Ancient Dragon",
+                    threshold = 10,
+                    platformStand = true
+                },
+            }
             
             local function equipAndUseSundial()
                 unequipTool("Aurora Totem")
@@ -1513,7 +1584,6 @@ spawn(function()
                     ReplicatedStorage.events.CancelEmote:FireServer()
                     task.wait(0.5)
                     if rodCharacter:FindFirstChild("events") then
-                        print("cast")
                         rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
                     else
                         warn("castAsync event not found")
@@ -1529,7 +1599,6 @@ spawn(function()
                             if GuiService.SelectedObject == button then
                                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
                                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-                                print("shake")
                             end
                         end
                         shakeUi = PlayerGui:FindFirstChild("shakeui")
