@@ -1483,6 +1483,7 @@ spawn(function()
                     repeat task.wait() 
                     until LocalPlayer.Backpack:FindFirstChild(rodValue) or not getgenv().Ready
                     if LocalPlayer.Backpack:FindFirstChild(rodValue) then
+                        print("Equip Tool ",rodValue)
                         LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(rodValue))
                     end
                     rodCharacter = Character:FindFirstChild(rodValue)
