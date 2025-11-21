@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 6.0")
+print("Fisch Script Loaded Version 7.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1463,32 +1463,37 @@ spawn(function()
 
                 local BossSpawn = CheckBoss() or CheckBoss2()
                 local BossInfo = BossSpawn and BOSS_TARGETS[BossSpawn]
-                
+                local RodSelect
                 if not rodCharacter then
                     if Boss.Enable then
                         if BossSpawn and BossInfo then
                             if BossSpawn == "Forsaken Veil - Scylla" then
                                 ChangRod(ROD_SCYLLA)
+                                RodSelect = ROD_SCYLLA
                             elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
                                 ChangRod(ROD_MOSSJAW)
+                                RodSelect = ROD_MOSSJAW
                             else 
                                 ChangRod(ROD_MAIN)
+                                RodSelect = ROD_MAIN
                             end
                         else
                             ChangRod(ROD_MAIN)
+                            RodSelect = ROD_MAIN
                         end
                     else
                         ChangRod(ROD_MAIN)
+                        RodSelect = ROD_MAIN
                     end
                     repeat task.wait() 
-                    until LocalPlayer.Backpack:FindFirstChild(rodValue) or not getgenv().Ready
-                    if LocalPlayer.Backpack:FindFirstChild(rodValue) then
-                        print("Equip Tool ",rodValue)
-                        LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(rodValue))
+                    until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
+                    if LocalPlayer.Backpack:FindFirstChild(RodSelect) then
+                        print("Equip Tool ",RodSelect)
+                        LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(RodSelect))
                     end
-                    rodCharacter = Character:FindFirstChild(rodValue)
+                    rodCharacter = Character:FindFirstChild(RodSelect)
                     repeat task.wait() 
-                    until Character:FindFirstChild(rodValue) or not getgenv().Ready
+                    until Character:FindFirstChild(RodSelect) or not getgenv().Ready
                 end
 
 
