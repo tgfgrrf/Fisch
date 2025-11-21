@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 5.0")
+print("Fisch Script Loaded Version 6.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -787,11 +787,10 @@ end)
 
 
 local function ChangRod(rodName)
-   repeat task.wait() 
-            game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
-        until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
-        print("Changed Rod ",rodName)
-    return
+    repeat task.wait() 
+        game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
+    until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
+    print("Changed Rod ",rodName)
 end
 
 local function CheckInventory(itemName)
@@ -1240,13 +1239,13 @@ spawn(function()
                 if Boss.Enable then
                     if BossSpawn and BossInfo then
                         AutoFreeze = false
-                        if BossSpawn == "Forsaken Veil - Scylla" then
-                            ensureRod(ROD_SCYLLA)
-                        elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
-                            ensureRod(ROD_MOSSJAW)
-                        else 
-                            ensureRod(ROD_MAIN)
-                        end
+                        -- if BossSpawn == "Forsaken Veil - Scylla" then
+                        --     ensureRod(ROD_SCYLLA)
+                        -- elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+                        --     ensureRod(ROD_MOSSJAW)
+                        -- else 
+                        --     ensureRod(ROD_MAIN)
+                        -- end
 
                         
 
@@ -1273,17 +1272,17 @@ spawn(function()
                                 Humanoid:EquipTool(Totem)
                             end
                         else
-                            ensureRod(ROD_MAIN)
+                            -- ensureRod(ROD_MAIN)
                             TP(TeleportMode())
                             getgenv().Ready = true
                         end
                     else
-                        ensureRod(ROD_MAIN)
+                        -- ensureRod(ROD_MAIN)
                         TP(TeleportMode())
                         getgenv().Ready = true
                     end
                 else
-                    ensureRod(ROD_MAIN)
+                    -- ensureRod(ROD_MAIN)
                     TP(TeleportMode())
                     getgenv().Ready = true
                 end
@@ -1451,21 +1450,44 @@ spawn(function()
                     --     end
                     -- end
                 end
+
+
+                local ROD_SCYLLA = _G.Settings.Farm.Rod.ScyllaRod or "Rod Of The Zenith"
+                local ROD_MOSSJAW = _G.Settings.Farm.Rod.MossjawRod or "Elder Mossripper"
+                local ROD_MAIN = _G.Settings.Farm.Rod.FarmRod or "Tryhard Rod"
+
+                local Settings = _G.Settings
+                local Farm = Settings.Farm
+                local Boss = Settings.Boss
+                local ModeFarm = Farm.Mode
+
+                local BossSpawn = CheckBoss() or CheckBoss2()
+                local BossInfo = BossSpawn and BOSS_TARGETS[BossSpawn]
                 
                 if not rodCharacter then
-                    -- repeat task.wait()
-                    --     print("Equiping Rod : ",rodValue)
-                    --     Character.Humanoid:EquipTool(rodTool)
-                    --     rodCharacter = Character:FindFirstChild(rodValue)
-                    -- until rodCharacter or not getgenv().Ready
-                    -- print("Equipped rod Successfully:", rodValue)
-                    local backpack = LocalPlayer:WaitForChild("Backpack")
-                    for _, item in pairs(backpack:GetChildren()) do
-                        if item:IsA("Tool") and item.Name == rodValue then
-                            item.Parent = LocalPlayer.Character
-                            print(rodValue .. " equipped.")
+                    if Boss.Enable then
+                        if BossSpawn and BossInfo then
+                            if BossSpawn == "Forsaken Veil - Scylla" then
+                                ChangRod(ROD_SCYLLA)
+                            elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+                                ChangRod(ROD_MOSSJAW)
+                            else 
+                                ChangRod(ROD_MAIN)
+                            end
+                        else
+                            ChangRod(ROD_MAIN)
                         end
+                    else
+                        ChangRod(ROD_MAIN)
                     end
+                    repeat task.wait() 
+                    until LocalPlayer.Backpack:FindFirstChild(rodValue) or not getgenv().Ready
+                    if LocalPlayer.Backpack:FindFirstChild(rodValue) then
+                        LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(rodValue))
+                    end
+                    rodCharacter = Character:FindFirstChild(rodValue)
+                    repeat task.wait() 
+                    until Character:FindFirstChild(rodValue) or not getgenv().Ready
                 end
 
 
