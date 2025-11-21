@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 9.0")
+print("Fisch Script Loaded Version 10.0")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1533,11 +1533,11 @@ spawn(function()
                 local ModeFarm = Farm.Mode
 
                 local BossSpawn = CheckBoss() or CheckBoss2()
-                local BossInfo = BossSpawn and BOSS_TARGETS[BossSpawn]
+                -- local BossInfo = BossSpawn and BOSS_TARGETS[BossSpawn]
                 local RodSelect
                 if not rodCharacter then
                     if Boss.Enable then
-                        if BossSpawn and BossInfo then
+                        if BossSpawn then
                             if BossSpawn == "Forsaken Veil - Scylla" then
                                 ChangRod(ROD_SCYLLA)
                                 RodSelect = ROD_SCYLLA
