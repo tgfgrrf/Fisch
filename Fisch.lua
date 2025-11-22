@@ -3,9 +3,11 @@ if getgenv().LoadedFisch then
     return
 end
 
+-- loadstring(game:HttpGet("https://raw.githubusercontent.com/tgfgrrf/Fisch/refs/heads/main/Fisch.lua"))()
+
 getgenv().LoadedFisch = true
 
-print("Fisch Script Loaded Version 13")
+print("Fisch Script Loaded Version 16")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1512,7 +1514,7 @@ spawn(function()
                 local ROD_SCYLLA = _G.Settings.Farm.Rod.ScyllaRod or "Rod Of The Zenith"
                 local ROD_MOSSJAW = _G.Settings.Farm.Rod.MossjawRod or "Elder Mossripper"
                 local ROD_MAIN = _G.Settings.Farm.Rod.FarmRod or "Tryhard Rod"
-                local Rod_Event = _G.Setting.Farm.Rod.Admin_Event or "Cerulean Fang Rod"
+                local Rod_Event = _G.Settings.Farm.Rod.Admin_Event or "Cerulean Fang Rod"
 
 
                 local Settings = _G.Settings
@@ -1521,8 +1523,11 @@ spawn(function()
                 local ModeFarm = Farm.Mode
                 local BossSpawn = CheckBoss() or CheckBoss2()
                 local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
+                local biteValue = nil
+
 
                 local RodSelect
+
                 if EventState ~= "None" then
                     if not CheckInventory(Rod_Event) then
                         print(Rod_Event.." not found in inventory")
