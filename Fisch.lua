@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 10.0")
+print("Fisch Script Loaded Version 11")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -829,7 +829,7 @@ local function TeleportMode()
         return CFrame.new(-1143.84082, 134.632812, -1080.47131, 0.986154318, 7.84733611e-09, -0.165830299, -1.20236212e-08, 1, -2.4180201e-08, 0.165830299, 2.58392898e-08, 0.986154318)
     elseif Mode == "Money" then
         Status:SetTitle("Status : Farm Money")
-        return 4318.6123, -2009.00012, -4708.3877, -0.99999994, 3.44392426e-09, 0.000401143276, 3.44219631e-09, 1, -4.30829816e-09, -0.000401143276, -4.30691705e-09, -0.99999994
+        return -891.673767, 133.172211, -1108.21423, -0.763832688, -2.31609878e-08, -0.645414352, -1.6944691e-08, 1, -1.58318123e-08, 0.645414352, -1.15650978e-09, -0.763832688
     elseif Mode == "Level" then
         Status:SetTitle("Status : Farm Level")
         return CFrame.new(1376.12842, -603.603577, 2337.55347, 0.945005476, -3.90646875e-08, -0.32705453, 4.45639081e-08, 1, 9.32092448e-09, 0.32705453, -2.33831532e-08, 0.945005476)
@@ -1533,22 +1533,18 @@ spawn(function()
                 local ModeFarm = Farm.Mode
 
                 local BossSpawn = CheckBoss() or CheckBoss2()
-                -- local BossInfo = BossSpawn and BOSS_TARGETS[BossSpawn]
+
                 local RodSelect
-                if not rodCharacter then
-                    if Boss.Enable then
-                        if BossSpawn then
-                            if BossSpawn == "Forsaken Veil - Scylla" then
-                                ChangRod(ROD_SCYLLA)
-                                RodSelect = ROD_SCYLLA
-                            elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
-                                ChangRod(ROD_MOSSJAW)
-                                RodSelect = ROD_MOSSJAW
-                            else 
-                                ChangRod(ROD_MAIN)
-                                RodSelect = ROD_MAIN
-                            end
-                        else
+
+                if Boss.Enable then
+                    if BossSpawn then
+                        if BossSpawn == "Forsaken Veil - Scylla" then
+                            ChangRod(ROD_SCYLLA)
+                            RodSelect = ROD_SCYLLA
+                        elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+                            ChangRod(ROD_MOSSJAW)
+                            RodSelect = ROD_MOSSJAW
+                        else 
                             ChangRod(ROD_MAIN)
                             RodSelect = ROD_MAIN
                         end
@@ -1556,8 +1552,14 @@ spawn(function()
                         ChangRod(ROD_MAIN)
                         RodSelect = ROD_MAIN
                     end
-                    repeat task.wait() 
-                    until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
+                else
+                    ChangRod(ROD_MAIN)
+                    RodSelect = ROD_MAIN
+                end
+
+                
+                if not Character:FindFirstChild(RodSelect) then
+                    repeat task.wait() until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
                     if LocalPlayer.Backpack:FindFirstChild(RodSelect) then
                         print("Equip Tool ",RodSelect)
                         LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(RodSelect))
