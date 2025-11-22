@@ -7,7 +7,7 @@ end
 
 getgenv().LoadedFisch = true
 
-print("Fisch Script Loaded Version 21")
+print("Fisch Script Loaded Version 20")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
