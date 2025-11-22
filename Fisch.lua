@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 11")
+print("Fisch Script Loaded Version 12")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -793,12 +793,7 @@ local function ChangRod(rodName)
     print("Changed Rod ",rodName)
 end
 
-local function CheckInventory(itemName)
-    local character = LocalPlayer.Character
-    local backpack = LocalPLayer:FindFirstChild("Backpack")
-    if not character and not backpack then return false end
-    return true
-end
+
 
 local function ensureRod(rodName)
     local Backpack = LocalPlayer:WaitForChild("Backpack")
@@ -1347,6 +1342,15 @@ local world = ReplicatedStorage:WaitForChild("world")
 local cycle = world:WaitForChild("cycle")
 local weather = world:WaitForChild("weather")
 
+
+local function CheckInventory(itemName)
+    local character = LocalPlayer.Character
+    local backpack = game:GetService("Players").LocalPlayer:FindFirstChild("Backpack") -- LocalPlayer:FindFirstChild("Backpack")
+    if not character:FindFirstChild(itemName) and not backpack:FindFirstChild(itemName) then return false end
+    return true
+end
+
+
 local lastCheck = 0
 local RESET_TIME = 10
 spawn(function()
@@ -1539,22 +1543,46 @@ spawn(function()
                 if Boss.Enable then
                     if BossSpawn then
                         if BossSpawn == "Forsaken Veil - Scylla" then
-                            ChangRod(ROD_SCYLLA)
-                            RodSelect = ROD_SCYLLA
+                            if not CheckInventory(ROD_SCYLLA) then
+                                print(ROD_SCYLLA.." not found in inventory")
+                                ChangRod(ROD_SCYLLA)
+                                RodSelect = ROD_SCYLLA
+                            else
+                                RodSelect = ROD_SCYLLA
+                            end
                         elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
-                            ChangRod(ROD_MOSSJAW)
-                            RodSelect = ROD_MOSSJAW
+                            if not CheckInventory(ROD_MOSSJAW) then
+                                print(ROD_MOSSJAW.." not found in inventory")
+                                ChangRod(ROD_MOSSJAW)
+                                RodSelect = ROD_MOSSJAW
+                            else
+                                RodSelect = ROD_MOSSJAW
+                            end
                         else 
-                            ChangRod(ROD_MAIN)
-                            RodSelect = ROD_MAIN
+                            if not CheckInventory(ROD_MAIN) then
+                                print(ROD_MAIN.." not found in inventory")
+                                ChangRod(ROD_MAIN)
+                                RodSelect = ROD_MAIN
+                            else
+                                RodSelect = ROD_MAIN
+                            end
                         end
                     else
-                        ChangRod(ROD_MAIN)
-                        RodSelect = ROD_MAIN
+                        if not CheckInventory(ROD_MAIN) then
+                            print(ROD_MAIN.." not found in inventory")
+                            ChangRod(ROD_MAIN)
+                            RodSelect = ROD_MAIN
+                        else
+                            RodSelect = ROD_MAIN
+                        end
                     end
                 else
-                    ChangRod(ROD_MAIN)
-                    RodSelect = ROD_MAIN
+                    if not CheckInventory(ROD_MAIN) then
+                        ChangRod(ROD_MAIN)
+                        RodSelect = ROD_MAIN
+                    else
+                        RodSelect = ROD_MAIN
+                    end
                 end
 
                 
