@@ -1,4 +1,10 @@
 
+if getgenv().LoadedFisch then
+    return
+end
+
+getgenv().LoadedFisch = true
+
 print("Fisch Script Loaded Version 13")
 local AutoAurora = false
 local AutoKickSer = false
