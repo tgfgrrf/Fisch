@@ -7,7 +7,7 @@ end
 
 getgenv().LoadedFisch = true
 
-print("Fisch Script Loaded Version 20")
+print("Fisch Script Loaded Version 21")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1523,12 +1523,15 @@ spawn(function()
                 local ModeFarm = Farm.Mode
                 local BossSpawn = CheckBoss() or CheckBoss2()
                 local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
-                local biteValue = Character[rodValue].values.bite.Value
+                local biteValue = Character:FindFirstChild(rodValue)
+                local value = biteValue and biteValue:FindFirstChild("values")
+                local bite = value and value:FindFirstChild("bite")
 
 
                 local RodSelect
-                if biteValue == false then
-                    if EventState ~= "None" then
+                -- if bite.Value == false then
+                if EventState ~= "None" then
+                    if bite.Value == false then
                         if not CheckInventory(Rod_Event) then
                             print(Rod_Event.." not found in inventory")
                             ChangRod(Rod_Event)
@@ -1536,8 +1539,10 @@ spawn(function()
                         else
                             RodSelect = Rod_Event
                         end
-                    elseif Boss.Enable then
-                        if BossSpawn then
+                    end
+                elseif Boss.Enable then
+                    if BossSpawn then
+                        if bite.Value == false then
                             if BossSpawn == "Forsaken Veil - Scylla" then
                                 if not CheckInventory(ROD_SCYLLA) then
                                     print(ROD_SCYLLA.." not found in inventory")
@@ -1563,7 +1568,9 @@ spawn(function()
                                     RodSelect = ROD_MAIN
                                 end
                             end
-                        else
+                        end
+                    else
+                        if bite.Value == false then
                             if not CheckInventory(ROD_MAIN) then
                                 print(ROD_MAIN.." not found in inventory")
                                 ChangRod(ROD_MAIN)
@@ -1572,16 +1579,17 @@ spawn(function()
                                 RodSelect = ROD_MAIN
                             end
                         end
+                    end
+                else
+                    if not CheckInventory(ROD_MAIN) then
+                        print(ROD_MAIN.." not found in inventory")
+                        ChangRod(ROD_MAIN)
+                        RodSelect = ROD_MAIN
                     else
-                        if not CheckInventory(ROD_MAIN) then
-                            print(ROD_MAIN.." not found in inventory")
-                            ChangRod(ROD_MAIN)
-                            RodSelect = ROD_MAIN
-                        else
-                            RodSelect = ROD_MAIN
-                        end
+                        RodSelect = ROD_MAIN
                     end
                 end
+                -- end
 
                 
                 if not Character:FindFirstChild(RodSelect) then
