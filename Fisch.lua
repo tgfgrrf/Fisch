@@ -7,7 +7,7 @@ end
 
 getgenv().LoadedFisch = true
 
-print("Fisch Script Loaded Version 16")
+print("Fisch Script Loaded Version 20")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -1523,38 +1523,47 @@ spawn(function()
                 local ModeFarm = Farm.Mode
                 local BossSpawn = CheckBoss() or CheckBoss2()
                 local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
-                local biteValue = nil
+                local biteValue = Character[rodValue].values.bite.Value
 
 
                 local RodSelect
-
-                if EventState ~= "None" then
-                    if not CheckInventory(Rod_Event) then
-                        print(Rod_Event.." not found in inventory")
-                        ChangRod(Rod_Event)
-                        RodSelect = Rod_Event
-                    else
-                        RodSelect = Rod_Event
-                    end
-                elseif Boss.Enable then
-                    if BossSpawn then
-                        if BossSpawn == "Forsaken Veil - Scylla" then
-                            if not CheckInventory(ROD_SCYLLA) then
-                                print(ROD_SCYLLA.." not found in inventory")
-                                ChangRod(ROD_SCYLLA)
-                                RodSelect = ROD_SCYLLA
-                            else
-                                RodSelect = ROD_SCYLLA
+                if biteValue == false then
+                    if EventState ~= "None" then
+                        if not CheckInventory(Rod_Event) then
+                            print(Rod_Event.." not found in inventory")
+                            ChangRod(Rod_Event)
+                            RodSelect = Rod_Event
+                        else
+                            RodSelect = Rod_Event
+                        end
+                    elseif Boss.Enable then
+                        if BossSpawn then
+                            if BossSpawn == "Forsaken Veil - Scylla" then
+                                if not CheckInventory(ROD_SCYLLA) then
+                                    print(ROD_SCYLLA.." not found in inventory")
+                                    ChangRod(ROD_SCYLLA)
+                                    RodSelect = ROD_SCYLLA
+                                else
+                                    RodSelect = ROD_SCYLLA
+                                end
+                            elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+                                if not CheckInventory(ROD_MOSSJAW) then
+                                    print(ROD_MOSSJAW.." not found in inventory")
+                                    ChangRod(ROD_MOSSJAW)
+                                    RodSelect = ROD_MOSSJAW
+                                else
+                                    RodSelect = ROD_MOSSJAW
+                                end
+                            else 
+                                if not CheckInventory(ROD_MAIN) then
+                                    print(ROD_MAIN.." not found in inventory")
+                                    ChangRod(ROD_MAIN)
+                                    RodSelect = ROD_MAIN
+                                else
+                                    RodSelect = ROD_MAIN
+                                end
                             end
-                        elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
-                            if not CheckInventory(ROD_MOSSJAW) then
-                                print(ROD_MOSSJAW.." not found in inventory")
-                                ChangRod(ROD_MOSSJAW)
-                                RodSelect = ROD_MOSSJAW
-                            else
-                                RodSelect = ROD_MOSSJAW
-                            end
-                        else 
+                        else
                             if not CheckInventory(ROD_MAIN) then
                                 print(ROD_MAIN.." not found in inventory")
                                 ChangRod(ROD_MAIN)
@@ -1571,14 +1580,6 @@ spawn(function()
                         else
                             RodSelect = ROD_MAIN
                         end
-                    end
-                else
-                    if not CheckInventory(ROD_MAIN) then
-                        print(ROD_MAIN.." not found in inventory")
-                        ChangRod(ROD_MAIN)
-                        RodSelect = ROD_MAIN
-                    else
-                        RodSelect = ROD_MAIN
                     end
                 end
 
