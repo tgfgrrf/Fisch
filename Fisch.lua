@@ -1,5 +1,5 @@
 
-print("Fisch Script Loaded Version 12")
+print("Fisch Script Loaded Version 13")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -23,11 +23,12 @@ _G.Settings = {
         Reel = {
             Bar = "Center", -- Center , Large
             Mode = "Fast[Risk]",-- Center, Large ,Safe 80,Fast[Risk]
-            ReelBarprogress = 0.50,
+            ReelBarprogress = 0.67,
             Enable = true
         },
 
         Rod = {
+            Admin_Event = "Flimsy Rod",
             FarmRod = "Flimsy Rod",
             ScyllaRod = "Flimsy Rod",
             MossjawRod = "Flimsy Rod"
@@ -1467,7 +1468,6 @@ spawn(function()
 
 
                 if AutoAurora and CheckAuroraTotem() and CheckSundialTotem() and not Checkweather() and not CheckRainBow() then
-                    
                     if cycle.Value == "Day" then
                         equipAndUseSundial()
                         local connection
@@ -1500,47 +1500,32 @@ spawn(function()
                             end
                         end)
                     end
-
-                    -- if CheckDayNight() == "Night" then
-                    --     if AuroraTotem then
-                    --         repeat task.wait(1)
-                    --             AuroraTotem:Activate()
-                    --         until Checkweather() or not AutoAurora or not getgenv().Ready
-                    --     else
-                    --         local auroraTool = LocalPlayer.Backpack:FindFirstChild("Aurora Totem")
-                    --         if auroraTool and Character:FindFirstChild("Humanoid") then
-                    --             Character.Humanoid:EquipTool(auroraTool)
-                    --         end
-                    --     end
-                    -- else
-                    --     if SundialTotem then
-                    --         repeat task.wait(1)
-                    --             SundialTotem:Activate()
-                    --         until CheckDayNight() == "Night" or not AutoAurora or not getgenv().Ready
-                    --     else
-                    --         local sundialTool = LocalPlayer.Backpack:FindFirstChild("Sundial Totem")
-                    --         if sundialTool and Character:FindFirstChild("Humanoid") then
-                    --             Character.Humanoid:EquipTool(sundialTool)
-                    --         end
-                    --     end
-                    -- end
                 end
 
 
                 local ROD_SCYLLA = _G.Settings.Farm.Rod.ScyllaRod or "Rod Of The Zenith"
                 local ROD_MOSSJAW = _G.Settings.Farm.Rod.MossjawRod or "Elder Mossripper"
                 local ROD_MAIN = _G.Settings.Farm.Rod.FarmRod or "Tryhard Rod"
+                local Rod_Event = _G.Setting.Farm.Rod.Admin_Event or "Cerulean Fang Rod"
+
 
                 local Settings = _G.Settings
                 local Farm = Settings.Farm
                 local Boss = Settings.Boss
                 local ModeFarm = Farm.Mode
-
                 local BossSpawn = CheckBoss() or CheckBoss2()
+                local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
 
                 local RodSelect
-
-                if Boss.Enable then
+                if EventState ~= "None" then
+                    if not CheckInventory(Rod_Event) then
+                        print(Rod_Event.." not found in inventory")
+                        ChangRod(Rod_Event)
+                        RodSelect = Rod_Event
+                    else
+                        RodSelect = Rod_Event
+                    end
+                elseif Boss.Enable then
                     if BossSpawn then
                         if BossSpawn == "Forsaken Veil - Scylla" then
                             if not CheckInventory(ROD_SCYLLA) then
@@ -1578,6 +1563,7 @@ spawn(function()
                     end
                 else
                     if not CheckInventory(ROD_MAIN) then
+                        print(ROD_MAIN.." not found in inventory")
                         ChangRod(ROD_MAIN)
                         RodSelect = ROD_MAIN
                     else
@@ -1587,13 +1573,13 @@ spawn(function()
 
                 
                 if not Character:FindFirstChild(RodSelect) then
-                    repeat task.wait() until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
+                    repeat task.wait(1) until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
                     if LocalPlayer.Backpack:FindFirstChild(RodSelect) then
                         print("Equip Tool ",RodSelect)
                         LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(RodSelect))
                     end
                     rodCharacter = Character:FindFirstChild(RodSelect)
-                    repeat task.wait() 
+                    repeat task.wait(1) 
                     until Character:FindFirstChild(RodSelect) or not getgenv().Ready
                 end
 
@@ -2124,6 +2110,20 @@ SelectRodmj:OnChanged(function(value)
     _G.Settings.Farm.Rod.MossjawRod = value
     getgenv().SaveSetting()
 end)
+
+
+local SelectRodam = Tabs.Rod:AddDropdown("SelectRodam", {
+    Title = "Select Admin Event Rod",
+    Values = RodNames,
+    Multi = false,
+    Default = _G.Settings.Farm.Rod.Admin_Event,
+})
+
+SelectRodam:OnChanged(function(value)
+    _G.Settings.Farm.Rod.Admin_Event = value
+    getgenv().SaveSetting()
+end)
+
 
 Tabs.Rod:AddButton({
     Title = "Refresh Rod List",
