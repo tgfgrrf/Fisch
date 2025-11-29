@@ -7,7 +7,7 @@ end
 
 getgenv().LoadedFisch = true
 
-print("Fisch Script Loaded Version 20")
+print("Fisch Script Loaded Version 21")
 local AutoAurora = false
 local AutoKickSer = false
 _G.Settings = {
@@ -84,22 +84,6 @@ local plr = game.Players.LocalPlayer
 repeat wait() until plr.Character
 repeat wait() until plr.Character:FindFirstChild("HumanoidRootPart")
 repeat wait() until plr.Character:FindFirstChild("Humanoid")
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualUser = game:GetService("VirtualUser")
-local CollectionService = game:GetService("CollectionService")
-local HttpService = game:GetService("HttpService")
-local Client = Players.LocalPlayer
--- Folder
-local PlayersStats = Workspace:WaitForChild("PlayerStats")
-local Player_Folder = PlayersStats:WaitForChild(Client.Name)
-local Data = Player_Folder:WaitForChild("T"):WaitForChild(Client.Name)
-
-repeat task.wait() 
-    PlayersStats = Workspace:WaitForChild("PlayerStats",3) print(PlayersStats)
-    Player_Folder = PlayersStats:WaitForChild(Client.Name,3) print(Player_Folder)
-    Data = Player_Folder:WaitForChild("T"):WaitForChild(Client.Name,3) print(Data)
-until Data
 repeat wait() ClickMiddle() until game:GetService("Players").LocalPlayer.PlayerGui.loading.Enabled == false 
 
 
@@ -224,15 +208,27 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
 })
 
+-- local savedPosition = nil
+-- if _G.Settings.Farm.Position then
+-- 	local sp = _G.Settings.Farm.Position
+-- 	if sp.X and sp.Y and sp.Z and sp.Yaw then
+-- 		local pos = Vector3.new(sp.X, sp.Y, sp.Z)
+-- 		local yawRad = math.rad(sp.Yaw)
+-- 		savedPosition = CFrame.new(pos) * CFrame.Angles(0, yawRad, 0)
+-- 	end
+-- end
+
 local savedPosition = nil
 if _G.Settings.Farm.Position then
-	local sp = _G.Settings.Farm.Position
-	if sp.X and sp.Y and sp.Z and sp.Yaw then
-		local pos = Vector3.new(sp.X, sp.Y, sp.Z)
-		local yawRad = math.rad(sp.Yaw)
-		savedPosition = CFrame.new(pos) * CFrame.Angles(0, yawRad, 0)
-	end
+    local sp = _G.Settings.Farm.Position
+    if sp.X and sp.Y and sp.Z and sp.Yaw then
+        local pos = Vector3.new(sp.X, sp.Y, sp.Z)
+        local yawRad = sp.Yaw
+        savedPosition = CFrame.new(pos) * CFrame.Angles(0, yawRad, 0)
+        print("Loaded saved position:", savedPosition)
+    end
 end
+
 
 game:GetService("Players").LocalPlayer.Idled:connect(function()
 	game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -726,17 +722,17 @@ Tabs.Main:AddButton({
                     Title = "Confirm",
                     Callback = function()
                         if HumanoidRootPart then
-                            savedPosition = HumanoidRootPart.CFrame
-                            local pos = savedPosition.Position
-                            local _, yRot, _ = savedPosition:ToEulerAnglesXYZ()
                             _G.Settings.Farm.Position = {
-                                X = pos.X,
-                                Y = pos.Y,
-                                Z = pos.Z,
-                                Yaw = math.deg(yRot)
+                                X = HumanoidRootPart.CFrame.X,
+                                Y = HumanoidRootPart.CFrame.Y,
+                                Z = HumanoidRootPart.CFrame.Z,
+                                Yaw = HumanoidRootPart.CFrame:ToEulerAnglesYXZ()
                             }
                             getgenv().SaveSetting()
-                            print("Save At : ",savedPosition)
+                            savedPosition = HumanoidRootPart.CFrame
+                            print("Position Saved!")
+                        else
+                            print("HumanoidRootPart not found!")
                         end
                     end
                 },
@@ -780,13 +776,13 @@ local Selltime = tick()
 spawn(function()
     while task.wait() do
         if not _G.Settings.Fish.SellAll then return end
-        if tick() - Selltime >= 60 then 
+        if tick() - Selltime >= 600 then
             local success, err = pcall(function()
                 SellAllEvent:InvokeServer()
             end)
             if success then
                 Selltime = tick() -- Reset timer only on success
-                print("Sold all fish!")
+                print("Sold all fish!",tick())
             else
                 warn("Failed to sell: " .. tostring(err))
             end
@@ -799,7 +795,7 @@ local function ChangRod(rodName)
     repeat task.wait() 
         game:GetService("ReplicatedStorage").packages.Net["RF/Rod/Equip"]:InvokeServer(rodName)
     until LocalPlayer.Backpack:FindFirstChild(rodName) or Character:FindFirstChild(rodName)
-    print("Changed Rod ",rodName)
+    print("Changed Rod : ",rodName)
 end
 
 
@@ -833,7 +829,7 @@ local function TeleportMode()
         return CFrame.new(-1143.84082, 134.632812, -1080.47131, 0.986154318, 7.84733611e-09, -0.165830299, -1.20236212e-08, 1, -2.4180201e-08, 0.165830299, 2.58392898e-08, 0.986154318)
     elseif Mode == "Money" then
         Status:SetTitle("Status : Farm Money")
-        return -891.673767, 133.172211, -1108.21423, -0.763832688, -2.31609878e-08, -0.645414352, -1.6944691e-08, 1, -1.58318123e-08, 0.645414352, -1.15650978e-09, -0.763832688
+        return CFrame.new(-715.607483, -864.453674, -121.647392, -0.722895741, 7.16114954e-08, 0.690957129, 3.09414503e-08, 1, -7.12693264e-08, -0.690957129, -3.01410772e-08, -0.722895741)
     elseif Mode == "Level" then
         Status:SetTitle("Status : Farm Level")
         return CFrame.new(1376.12842, -603.603577, 2337.55347, 0.945005476, -3.90646875e-08, -0.32705453, 4.45639081e-08, 1, 9.32092448e-09, 0.32705453, -2.33831532e-08, 0.945005476)
@@ -1268,8 +1264,7 @@ spawn(function()
                             if EquippedTotem then
                                 local currentCycle = CycleValue
                                 EquippedTotem:Activate()
-                                repeat
-                                    task.wait(1)
+                                repeat task.wait(1)
                                     CycleValue = WorldFolder:WaitForChild("cycle").Value
                                 until CycleValue ~= currentCycle or not Settings.Farm.Enable or Boss.Mode ~= "Re Day"
                             else
@@ -1355,17 +1350,312 @@ local weather = world:WaitForChild("weather")
 local function CheckInventory(itemName)
     local character = LocalPlayer.Character
     local backpack = game:GetService("Players").LocalPlayer:FindFirstChild("Backpack") -- LocalPlayer:FindFirstChild("Backpack")
-    if not character:FindFirstChild(itemName) and not backpack:FindFirstChild(itemName) then return false end
+    if not character:FindFirstChild(itemName) and not backpack:FindFirstChild(itemName) then 
+        return false 
+    end
     return true
 end
 
 
-local lastCheck = 0
-local RESET_TIME = 10
-spawn(function()
-    while RunService.Heartbeat:Wait() do
-        if getgenv().Ready then 
+-- local lastCheck = 0
+-- local RESET_TIME = 10
+-- local LastReel = tick()
+-- spawn(function()
+--     while RunService.Heartbeat:Wait() do
+--         if getgenv().Ready then 
 
+--             local BOSS_TARGETS = {
+--                 ["Elder Mossjaw"] = {
+--                     cframe = CFrame.new(-4861.78271, -1793.96008, -10126.1406, 0.999018729, 9.09287579e-08, -0.0442892015, -9.21281185e-08, 1, -2.50390126e-08, 0.0442892015, 2.90947231e-08, 0.999018729),
+--                     threshold = 10
+--                 },
+--                 ["MossjawHunt"] = {
+--                     cframe = CFrame.new(-4861.78271, -1793.96008, -10126.1406, 0.999018729, 9.09287579e-08, -0.0442892015, -9.21281185e-08, 1, -2.50390126e-08, 0.0442892015, 2.90947231e-08, 0.999018729),
+--                     threshold = 10
+--                 },
+--                 ["Forsaken Veil - Scylla"] = {
+--                     cframe = CFrame.new(-2508.34229, -11224.4805, 6893.28467, -0.0316809788, -3.53211824e-08, -0.99949801, 2.09912301e-08, 1, -3.60042769e-08, 0.99949801, -2.21213448e-08, -0.0316809788),
+--                     threshold = 10
+--                 },
+--                 ["Megalodon Default"] = {
+--                     offset = Vector3.new(0, 20, 0),
+--                     zone = "Megalodon Default",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Megalodon Ancient"] = {
+--                     offset = Vector3.new(0, 20, 0),
+--                     zone = "Megalodon Ancient",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["The Kraken Pool"] = {
+--                     offset = Vector3.new(0, 70, 0),
+--                     zone = "The Kraken Pool",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Ancient Kraken Pool"] = {
+--                     offset = Vector3.new(0, 70, 0),
+--                     zone = "Ancient Kraken Pool",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Orcas Pool"] = {
+--                     offset = Vector3.new(0, 90, 0),
+--                     zone = "Orcas Pool",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Ancient Orcas Pool"] = {
+--                     offset = Vector3.new(0, 90, 0),
+--                     zone = "Ancient Orcas Pool",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["FischFright25"] = {
+--                     offset = Vector3.new(0, 80, 0),
+--                     zone = "FischFright25",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Whales Pool"] = {
+--                     offset = Vector3.new(0, 80, 0),
+--                     zone = "Whales Pool",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Colossal Blue Dragon"] = {
+--                     offset = Vector3.new(0, -10, 0),
+--                     zone = "Colossal Blue Dragon",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Colossal Ethereal Dragon"] = {
+--                     offset = Vector3.new(0, -10, 0),
+--                     zone = "Colossal Ethereal Dragon",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--                 ["Colossal Ancient Dragon"] = {
+--                     offset = Vector3.new(0, -10, 0),
+--                     zone = "Colossal Ancient Dragon",
+--                     threshold = 10,
+--                     platformStand = true
+--                 },
+--             }
+            
+--             local function equipAndUseSundial()
+--                 unequipTool("Aurora Totem")
+--                 local sundial = equipTool("Sundial Totem")
+--                 if sundial then
+--                     useTool(sundial)
+--                 end
+--             end
+
+--             local function equipAndUseAurora()
+--                 unequipTool("Sundial Totem")
+--                 local aurora = equipTool("Aurora Totem")
+--                 if aurora then
+--                     useTool(aurora)
+--                 end
+--             end
+
+--             local success, result = pcall(function()
+--                 local playerStats = workspace.PlayerStats[PlayerName]
+--                 local rodValue = playerStats.T[PlayerName].Stats.rod.Value
+--                 local rodCharacter = Character:FindFirstChild(rodValue)
+--                 local rodTool = LocalPlayer.Backpack:FindFirstChild(rodValue)
+--                 local ShakeDelay = _G.Settings.Farm.Shake.Delay
+--                 local CastMode = _G.Settings.Farm.Cast.Mode
+--                 local AuroraTotem, SundialTotem = Character:FindFirstChild("Aurora Totem"), Character:FindFirstChild("Sundial Totem")
+
+--                 tmssme:SetTitle("Status Farm : True")
+
+
+--                 if AutoAurora and CheckAuroraTotem() and CheckSundialTotem() and not Checkweather() and not CheckRainBow() then
+--                     if cycle.Value == "Day" then
+--                         equipAndUseSundial()
+--                         local connection
+--                         connection = cycle:GetPropertyChangedSignal("Value"):Connect(function()
+--                             if cycle.Value == "Night" then
+--                                 connection:Disconnect()
+--                                 equipAndUseAurora()
+--                                 if weather.Value ~= "Aurora_Borealis" then
+--                                     weather:GetPropertyChangedSignal("Value"):Wait()
+--                                 end
+--                             end
+--                         end)
+--                     elseif cycle.Value == "Night" then
+--                         equipAndUseAurora()
+--                         local connection1
+--                         connection1 = cycle:GetPropertyChangedSignal("Value"):Connect(function()
+--                             if cycle.Value == "Day" then
+--                                 connection1:Disconnect()
+--                                 equipAndUseSundial()
+--                                 local connection2
+--                                 connection2 = cycle:GetPropertyChangedSignal("Value"):Connect(function()
+--                                     if cycle.Value == "Night" then
+--                                         connection2:Disconnect()
+--                                         equipAndUseAurora()
+--                                         if weather.Value ~= "Aurora_Borealis" then
+--                                             weather:GetPropertyChangedSignal("Value"):Wait()
+--                                         end
+--                                     end
+--                                 end)
+--                             end
+--                         end)
+--                     end
+--                 end
+
+
+--                 local ROD_SCYLLA = _G.Settings.Farm.Rod.ScyllaRod or "Rod Of The Zenith"
+--                 local ROD_MOSSJAW = _G.Settings.Farm.Rod.MossjawRod or "Elder Mossripper"
+--                 local ROD_MAIN = _G.Settings.Farm.Rod.FarmRod or "Tryhard Rod"
+--                 local Rod_Event = _G.Settings.Farm.Rod.Admin_Event or "Cerulean Fang Rod"
+
+
+--                 local Settings = _G.Settings
+--                 local Farm = Settings.Farm
+--                 local Boss = Settings.Boss
+--                 local ModeFarm = Farm.Mode
+--                 local BossSpawn = CheckBoss() or CheckBoss2()
+--                 local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
+
+
+--                 local RodSelect
+--                 if EventState ~= "None" then
+--                     if not CheckInventory(Rod_Event) then
+--                         print(Rod_Event.." not found in inventory")
+--                         ChangRod(Rod_Event)
+--                         RodSelect = Rod_Event
+--                     else
+--                         RodSelect = Rod_Event
+--                     end
+--                 elseif Boss.Enable then
+--                     if BossSpawn then
+--                         if BossSpawn == "Forsaken Veil - Scylla" then
+--                             if not CheckInventory(ROD_SCYLLA) then
+--                                 print(ROD_SCYLLA.." not found in inventory")
+--                                 ChangRod(ROD_SCYLLA)
+--                                 RodSelect = ROD_SCYLLA
+--                             else
+--                                 RodSelect = ROD_SCYLLA
+--                             end
+--                         elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+--                             if not CheckInventory(ROD_MOSSJAW) then
+--                                 print(ROD_MOSSJAW.." not found in inventory")
+--                                 ChangRod(ROD_MOSSJAW)
+--                                 RodSelect = ROD_MOSSJAW
+--                             else
+--                                 RodSelect = ROD_MOSSJAW
+--                             end
+--                         else 
+--                             if not CheckInventory(ROD_MAIN) then
+--                                 print(ROD_MAIN.." not found in inventory")
+--                                 ChangRod(ROD_MAIN)
+--                                 RodSelect = ROD_MAIN
+--                             else
+--                                 RodSelect = ROD_MAIN
+--                             end
+--                         end
+--                     else
+--                         if not CheckInventory(ROD_MAIN) then
+--                             print(ROD_MAIN.." not found in inventory")
+--                             ChangRod(ROD_MAIN)
+--                             RodSelect = ROD_MAIN
+--                         else
+--                             RodSelect = ROD_MAIN
+--                         end
+--                     end
+--                 else
+--                     if not CheckInventory(ROD_MAIN) then
+--                         print(ROD_MAIN.." not found in inventory")
+--                         ChangRod(ROD_MAIN)
+--                         RodSelect = ROD_MAIN
+--                     else
+--                         RodSelect = ROD_MAIN
+--                     end
+--                 end
+
+
+                
+--                 if not Character:FindFirstChild(RodSelect) then
+--                     print("wait for equip tool ",RodSelect)
+--                     repeat RunService.Heartbeat:Wait() until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
+--                     if LocalPlayer.Backpack:FindFirstChild(RodSelect) then
+--                         print("Equip Tool ",RodSelect)
+--                         LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(RodSelect))
+--                     end
+--                     rodCharacter = Character:FindFirstChild(RodSelect)
+--                     print("wait for rod ",RodSelect)
+--                     repeat RunService.Heartbeat:Wait() 
+--                         rodCharacter = Character:FindFirstChild(RodSelect)
+--                     until rodCharacter or not getgenv().Ready
+--                     print("Found rod ",RodSelect)
+--                 else
+--                     repeat RunService.Heartbeat:Wait()
+--                         -- print("fishing...")
+--                         local rodCharacter = Character:FindFirstChild(RodSelect)
+--                         local bobber = rodCharacter:FindFirstChild("bobber")
+--                         local shakeUi = PlayerGui:FindFirstChild("shakeui")
+--                         local reelUi = PlayerGui:FindFirstChild("reel")
+--                         if not bobber and _G.Settings.Farm.Cast.Enable then
+--                             print("cast")
+--                             local castPower = (_G.Settings.Farm.Cast.Mode == "Perfect" and 100) or (_G.Settings.Farm.Cast.Mode == "Random" and math.random(75,100)) or 100
+--                             rodCharacter.events.castAsync:InvokeServer(castPower, 1)
+--                             repeat wait() until rodCharacter:FindFirstChild("bobber") or not getgenv().Ready or not Character:FindFirstChild(RodSelect)
+--                         elseif shakeUi and _G.Settings.Farm.Shake.Enable then
+--                             print("shake")
+--                             repeat RunService.Heartbeat:Wait(ShakeDelay)
+--                                 local safezone = shakeUi:FindFirstChild("safezone")
+--                                 local button = safezone and safezone:FindFirstChild("button")
+--                                 if button then
+--                                     GuiService.SelectedObject = button
+--                                     if GuiService.SelectedObject == button then
+--                                         VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+--                                         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+--                                     end
+--                                 end
+--                                 shakeUi = PlayerGui:FindFirstChild("shakeui")
+--                             until not shakeUi or not getgenv().Ready or not Character:FindFirstChild(RodSelect)
+--                         elseif reelUi and _G.Settings.Farm.Reel.Enable then
+--                             print("reel")
+--                             local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
+--                             local Mode = _G.Settings.Farm.Reel.Mode
+--                             local Bar = _G.Settings.Farm.Reel.Bar
+--                             local BareelProgress = _G.Settings.Farm.Reel.ReelBarprogress
+--                             local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+
+--                             -- repeat RunService.Heartbeat:Wait()
+--                                 local reel = PlayerGui:FindFirstChild("reel")
+--                                 local bar = reel and reel:FindFirstChild("bar")
+--                                 local playerbar = bar and bar:FindFirstChild("playerbar")
+--                                 playerbar:GetPropertyChangedSignal('Position'):Wait()
+--                                 task.wait(1)
+--                                 pcall(function()
+--                                     game.ReplicatedStorage:WaitForChild("events"):WaitForChild("reelfinished"):FireServer(100, true)
+--                                 end)
+--                                 repeat wait() until not PlayerGui:FindFirstChild("reel") or not getgenv().Ready or not Character:FindFirstChild(RodSelect)
+--                                 print("Reel Finished")
+--                                 -- until not playerbar or not getgenv().Ready or not Character:FindFirstChild(RodSelect)
+--                         end
+--                     until not getgenv().Ready or not Character:FindFirstChild(RodSelect)
+--                 end
+--             end)
+            
+--             if not success then
+--                 warn("Error:", result)
+--             end
+--         else
+--             tmssme:SetTitle("Status Farm : False")
+--         end
+--     end
+-- end)
+
+task.spawn(function()
+    while task.wait() do
+        if getgenv().Ready then
             local BOSS_TARGETS = {
                 ["Elder Mossjaw"] = {
                     cframe = CFrame.new(-4861.78271, -1793.96008, -10126.1406, 0.999018729, 9.09287579e-08, -0.0442892015, -9.21281185e-08, 1, -2.50390126e-08, 0.0442892015, 2.90947231e-08, 0.999018729),
@@ -1446,189 +1736,79 @@ spawn(function()
                     platformStand = true
                 },
             }
-            
-            local function equipAndUseSundial()
-                unequipTool("Aurora Totem")
-                local sundial = equipTool("Sundial Totem")
-                if sundial then
-                    useTool(sundial)
-                end
-            end
 
-            local function equipAndUseAurora()
-                unequipTool("Sundial Totem")
-                local aurora = equipTool("Aurora Totem")
-                if aurora then
-                    useTool(aurora)
-                end
-            end
 
-            local success, result = pcall(function()
-                local playerStats = workspace.PlayerStats[PlayerName]
-                local rodValue = playerStats.T[PlayerName].Stats.rod.Value
-                local rodCharacter = Character:FindFirstChild(rodValue)
-                local rodTool = LocalPlayer.Backpack:FindFirstChild(rodValue)
+            local suc , err = pcall(function()
+                tmssme:SetTitle("Status Farm : True")
                 local ShakeDelay = _G.Settings.Farm.Shake.Delay
                 local CastMode = _G.Settings.Farm.Cast.Mode
-                local AuroraTotem, SundialTotem = Character:FindFirstChild("Aurora Totem"), Character:FindFirstChild("Sundial Totem")
-
-                tmssme:SetTitle("Status Farm : True")
-
-
-                if AutoAurora and CheckAuroraTotem() and CheckSundialTotem() and not Checkweather() and not CheckRainBow() then
-                    if cycle.Value == "Day" then
-                        equipAndUseSundial()
-                        local connection
-                        connection = cycle:GetPropertyChangedSignal("Value"):Connect(function()
-                            if cycle.Value == "Night" then
-                                connection:Disconnect()
-                                equipAndUseAurora()
-                                if weather.Value ~= "Aurora_Borealis" then
-                                    weather:GetPropertyChangedSignal("Value"):Wait()
-                                end
-                            end
-                        end)
-                    elseif cycle.Value == "Night" then
-                        equipAndUseAurora()
-                        local connection1
-                        connection1 = cycle:GetPropertyChangedSignal("Value"):Connect(function()
-                            if cycle.Value == "Day" then
-                                connection1:Disconnect()
-                                equipAndUseSundial()
-                                local connection2
-                                connection2 = cycle:GetPropertyChangedSignal("Value"):Connect(function()
-                                    if cycle.Value == "Night" then
-                                        connection2:Disconnect()
-                                        equipAndUseAurora()
-                                        if weather.Value ~= "Aurora_Borealis" then
-                                            weather:GetPropertyChangedSignal("Value"):Wait()
-                                        end
-                                    end
-                                end)
-                            end
-                        end)
-                    end
-                end
-
-
+                -----------------------------
                 local ROD_SCYLLA = _G.Settings.Farm.Rod.ScyllaRod or "Rod Of The Zenith"
                 local ROD_MOSSJAW = _G.Settings.Farm.Rod.MossjawRod or "Elder Mossripper"
                 local ROD_MAIN = _G.Settings.Farm.Rod.FarmRod or "Tryhard Rod"
                 local Rod_Event = _G.Settings.Farm.Rod.Admin_Event or "Cerulean Fang Rod"
-
-
+                -----------------------------
                 local Settings = _G.Settings
                 local Farm = Settings.Farm
                 local Boss = Settings.Boss
                 local ModeFarm = Farm.Mode
                 local BossSpawn = CheckBoss() or CheckBoss2()
                 local EventState = game:GetService("ReplicatedStorage").world.admin_event.Value
-                local biteValue = Character:FindFirstChild(rodValue)
-                local value = biteValue and biteValue:FindFirstChild("values")
-                local bite = value and value:FindFirstChild("bite")
 
 
-                local RodSelect
-                -- if bite.Value == false then
+                _G.RodSelect = nil
                 if EventState ~= "None" then
-                    if bite.Value == false then
-                        if not CheckInventory(Rod_Event) then
-                            print(Rod_Event.." not found in inventory")
-                            ChangRod(Rod_Event)
-                            RodSelect = Rod_Event
-                        else
-                            RodSelect = Rod_Event
-                        end
-                    end
+                    _G.RodSelect = Rod_Event
                 elseif Boss.Enable then
                     if BossSpawn then
-                        if bite.Value == false then
-                            if BossSpawn == "Forsaken Veil - Scylla" then
-                                if not CheckInventory(ROD_SCYLLA) then
-                                    print(ROD_SCYLLA.." not found in inventory")
-                                    ChangRod(ROD_SCYLLA)
-                                    RodSelect = ROD_SCYLLA
-                                else
-                                    RodSelect = ROD_SCYLLA
-                                end
-                            elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
-                                if not CheckInventory(ROD_MOSSJAW) then
-                                    print(ROD_MOSSJAW.." not found in inventory")
-                                    ChangRod(ROD_MOSSJAW)
-                                    RodSelect = ROD_MOSSJAW
-                                else
-                                    RodSelect = ROD_MOSSJAW
-                                end
-                            else 
-                                if not CheckInventory(ROD_MAIN) then
-                                    print(ROD_MAIN.." not found in inventory")
-                                    ChangRod(ROD_MAIN)
-                                    RodSelect = ROD_MAIN
-                                else
-                                    RodSelect = ROD_MAIN
-                                end
-                            end
+                        if BossSpawn == "Forsaken Veil - Scylla" then
+                            _G.RodSelect = ROD_SCYLLA
+                        elseif BossSpawn == "Elder Mossjaw" or BossSpawn == "MossjawHunt" then
+                            _G.RodSelect = ROD_MOSSJAW
+                        else 
+                            _G.RodSelect = ROD_MAIN
                         end
                     else
-                        if bite.Value == false then
-                            if not CheckInventory(ROD_MAIN) then
-                                print(ROD_MAIN.." not found in inventory")
-                                ChangRod(ROD_MAIN)
-                                RodSelect = ROD_MAIN
-                            else
-                                RodSelect = ROD_MAIN
-                            end
-                        end
+                        _G.RodSelect = ROD_MAIN
                     end
                 else
-                    if not CheckInventory(ROD_MAIN) then
-                        print(ROD_MAIN.." not found in inventory")
-                        ChangRod(ROD_MAIN)
-                        RodSelect = ROD_MAIN
-                    else
-                        RodSelect = ROD_MAIN
-                    end
-                end
-                -- end
-
-                
-                if not Character:FindFirstChild(RodSelect) then
-                    repeat task.wait(1) until LocalPlayer.Backpack:FindFirstChild(RodSelect) or not getgenv().Ready
-                    if LocalPlayer.Backpack:FindFirstChild(RodSelect) then
-                        print("Equip Tool ",RodSelect)
-                        LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(RodSelect))
-                    end
-                    rodCharacter = Character:FindFirstChild(RodSelect)
-                    repeat task.wait(1) 
-                    until Character:FindFirstChild(RodSelect) or not getgenv().Ready
+                    _G.RodSelect = ROD_MAIN
                 end
 
 
+
+                if not Character:FindFirstChild(_G.RodSelect) then
+                    if not LocalPlayer.Backpack:FindFirstChild(_G.RodSelect) then
+                        ChangRod(_G.RodSelect)
+                        -- print("Changing Rod to : ",_G.RodSelect)
+                    end
+                    print("wait for equip tool : ",_G.RodSelect)
+                    repeat RunService.Heartbeat:Wait(1) until LocalPlayer.Backpack:FindFirstChild(_G.RodSelect) or not getgenv().Ready
+                    if LocalPlayer.Backpack:FindFirstChild(_G.RodSelect) then
+                        print("Equip Tool : ",_G.RodSelect)
+                        LocalPlayer.Character.Humanoid:EquipTool(LocalPlayer.Backpack:FindFirstChild(_G.RodSelect))
+                    end
+                    repeat RunService.Heartbeat:Wait(1) until Character:FindFirstChild(_G.RodSelect) or not getgenv().Ready
+                    print("Equiped Rod : ",_G.RodSelect)
+                end
+
+                local rodCharacter = Character:FindFirstChild(_G.RodSelect)
                 local bobber = rodCharacter:FindFirstChild("bobber")
-                local shakeUi = PlayerGui:FindFirstChild("shakeui")
-                local reelUi = PlayerGui:FindFirstChild("reel")
-                if not bobber then
-                    if not _G.Settings.Farm.Cast.Enable then return end
-                    local Resault
-                    if CastMode == "Perfect" then
-                        Resault = 100
-                    elseif CastMode == "Random" then
-                        Resault = math.random(70,100)
-                    else
-                        Resault = 100
-                    end
-                    ReplicatedStorage.events.CancelEmote:FireServer()
+                local ShakeUi = PlayerGui:FindFirstChild("shakeui")
+                local ReelUi = PlayerGui:FindFirstChild("reel")
+
+                if not bobber and _G.Settings.Farm.Cast.Enable then
+                    print("cast")
+                    local castPower = (_G.Settings.Farm.Cast.Mode == "Perfect" and 100) or (_G.Settings.Farm.Cast.Mode == "Random" and math.random(75,100)) or 100
+                    rodCharacter.events.castAsync:InvokeServer(castPower, math.huge)
                     task.wait(0.5)
-                    if rodCharacter:FindFirstChild("events") then
-                        rodCharacter.events.castAsync:InvokeServer(tonumber(Resault),1)
-                    else
-                        warn("castAsync event not found")
-                    end
                 end
-                if shakeUi then
-                    if not _G.Settings.Farm.Shake.Enable then return end
-                    repeat RunService.Heartbeat:Wait(ShakeDelay)
-                        local safezone = shakeUi:FindFirstChild("safezone")
+
+                if ShakeUi and _G.Settings.Farm.Shake.Enable then
+                    print("shake")
+                    repeat 
+                        RunService.Heartbeat:Wait(ShakeDelay)
+                        local safezone = ShakeUi:FindFirstChild("safezone")
                         local button = safezone and safezone:FindFirstChild("button")
                         if button then
                             GuiService.SelectedObject = button
@@ -1637,91 +1817,32 @@ spawn(function()
                                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
                             end
                         end
-                        shakeUi = PlayerGui:FindFirstChild("shakeui")
-                        reelUi = PlayerGui:FindFirstChild("reel")
-                    until not shakeUi or reelUi or not getgenv().Ready
+                        ShakeUi = PlayerGui:FindFirstChild("shakeui")
+                    until not ShakeUi or not getgenv().Ready or not Character:FindFirstChild(_G.RodSelect)
                 end
-                if reelUi and reelUi:FindFirstChild("bar") then
-                    if not _G.Settings.Farm.Reel.Enable then return end
-                    -- Reel()
-                    local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
-                    local Mode = _G.Settings.Farm.Reel.Mode
-                    local Bar = _G.Settings.Farm.Reel.Bar
-                    local BareelProgress = _G.Settings.Farm.Reel.ReelBarprogress
-                    local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
-                    local Sls 
-                    if Mode == "Safe 80" then
-                        Sls = 0.80
-                    elseif Mode == "Fast[Risk]" then
-                        Sls = tonumber(BareelProgress)
-                    end
 
-                    if playerGui then
-                        local reel = playerGui:FindFirstChild("reel")
-                        if reel then
-                            local bar = reel:FindFirstChild("bar")
-                            if bar then
-                                local fish = bar:FindFirstChild("fish")
-                                local playerbar = bar:FindFirstChild("playerbar")
-                                
-                                if fish and playerbar and fish:IsA("GuiObject") and playerbar:IsA("GuiObject") then
-                                    if _G.Settings.Farm.Reel.Enable then
-                                        if RodState ~= "Tryhard Rod" then
-                                            if Bar == "Center" then
-                                                repeat RunService.Heartbeat:Wait()
-                                                    playerbar.Position = UDim2.new(fish.Position.X.Scale, 0, playerbar.Position.Y.Scale, 0)
-                                                    local prog = GetProgressBarScale()
-                                                    if prog and prog >= Sls then
-                                                        pcall(function()
-                                                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                                            task.wait(0.5)
-                                                            game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
-                                                        end)
-                                                    end
-                                                until not playerGui:FindFirstChild("reel") or Bar ~= "Center" or not getgenv().Ready
-                                            elseif Bar == "Large" then
-                                                repeat RunService.Heartbeat:Wait()
-                                                    playerbar.Size = UDim2.fromScale(1,1)
-                                                    local prog = GetProgressBarScale()
-                                                    if prog and prog >= Sls then
-                                                        pcall(function()
-                                                            ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                                            task.wait(0.5)
-                                                            game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
-                                                        end)
-                                                    end
-                                                until not playerGui:FindFirstChild("reel") or Bar ~= "Large" or not getgenv().Ready
-                                            end
-                                        else
-                                            repeat RunService.Heartbeat:Wait()
-                                                playerbar.Size = UDim2.fromScale(1,1)
-                                                local prog = GetProgressBarScale()
-                                                if prog and prog >= Sls then
-                                                    pcall(function()
-                                                        ReplicatedStorage.events.reelfinished:FireServer(100, true)
-                                                        task.wait(0.5)
-                                                        game:GetService("Players").LocalPlayer.Character:FindFirstChild(RodState).events.reset:FireServer()
-                                                    end)
-                                                end
-                                            until not playerGui:FindFirstChild("reel") or RodState ~= "Tryhard Rod" or not getgenv().Ready
-                                        end
-                                    end
-                                end
-                            end
-                        end
-                    end
+                if ReelUi and _G.Settings.Farm.Reel.Enable then
+                    print("reel")
+                    pcall(function()
+                        local reel = PlayerGui:FindFirstChild("reel")
+                        local bar = reel and reel:FindFirstChild("bar")
+                        local playerbar = bar and bar:FindFirstChild("playerbar")
+                        playerbar:GetPropertyChangedSignal('Position'):Wait()
+                        print("Reel Position Changed")
+                        task.wait(0.8)
+                        game.ReplicatedStorage:WaitForChild("events"):WaitForChild("reelfinished"):FireServer(100, true)
+                    end)
+                    repeat task.wait() until not PlayerGui:FindFirstChild("reel") or not getgenv().Ready or not Character:FindFirstChild(_G.RodSelect)
+                    print("Reel Finished")
                 end
             end)
-            
-            if not success then
-                warn("Error:", result)
+
+            if not suc then
+                warn("Error:", err)
             end
-        else
-            tmssme:SetTitle("Status Farm : False")
         end
     end
 end)
-
 
 local FarmSection = Tabs.Main:AddSection("Setting Farm")
 
@@ -1763,40 +1884,40 @@ local SSDL = Tabs.Main:AddInput("SSDL", {
     end
 })
 
-local SRBPDL = Tabs.Main:AddInput("SRBPDL", {
-    Title = "Set Reel Barprogress[Fast Mode only]",
-    Default = _G.Settings.Farm.Reel.ReelBarprogress,
-    Numeric = true, -- Only allows numbers
-    Finished = true, -- Only calls callback when you press enter
-    Callback = function(Value)
-        _G.Settings.Farm.Reel.ReelBarprogress = Value
-        getgenv().SaveSetting()
-    end
-})
+-- local SRBPDL = Tabs.Main:AddInput("SRBPDL", {
+--     Title = "Set Reel Barprogress[Fast Mode only]",
+--     Default = _G.Settings.Farm.Reel.ReelBarprogress,
+--     Numeric = true, -- Only allows numbers
+--     Finished = true, -- Only calls callback when you press enter
+--     Callback = function(Value)
+--         _G.Settings.Farm.Reel.ReelBarprogress = Value
+--         getgenv().SaveSetting()
+--     end
+-- })
 
-local RMV = Tabs.Main:AddDropdown("RMV", {
-    Title = "Select Bar Reel",
-    Values = {"Center","Large"},
-    Multi = false,
-    Default = _G.Settings.Farm.Reel.Bar,
-})
+-- local RMV = Tabs.Main:AddDropdown("RMV", {
+--     Title = "Select Bar Reel",
+--     Values = {"Center","Large"},
+--     Multi = false,
+--     Default = _G.Settings.Farm.Reel.Bar,
+-- })
 
-RMV:OnChanged(function(Value)
-    _G.Settings.Farm.Reel.Bar = Value
-    getgenv().SaveSetting()
-end)
+-- RMV:OnChanged(function(Value)
+--     _G.Settings.Farm.Reel.Bar = Value
+--     getgenv().SaveSetting()
+-- end)
 
-local RMV = Tabs.Main:AddDropdown("RMV", {
-    Title = "Select Mode Reel",
-    Values = {"Safe 80","Fast[Risk]"},
-    Multi = false,
-    Default = _G.Settings.Farm.Reel.Mode,
-})
+-- local RMV = Tabs.Main:AddDropdown("RMV", {
+--     Title = "Select Mode Reel",
+--     Values = {"Safe 80","Fast[Risk]"},
+--     Multi = false,
+--     Default = _G.Settings.Farm.Reel.Mode,
+-- })
 
-RMV:OnChanged(function(Value)
-    _G.Settings.Farm.Reel.Mode = Value
-    getgenv().SaveSetting()
-end)
+-- RMV:OnChanged(function(Value)
+--     _G.Settings.Farm.Reel.Mode = Value
+--     getgenv().SaveSetting()
+-- end)
 
 local Myboat = {}
 local PlayersStats = workspace.PlayerStats[PlayerName].T[PlayerName].Boats
@@ -1883,35 +2004,37 @@ spawn(function()
         local player = game.Players.LocalPlayer
         local character = player.Character or player.CharacterAdded:Wait()
         local crabCage = character:FindFirstChild("Crab Cage")
-        if startAutoPlace then
-            local events = game:GetService("ReplicatedStorage"):FindFirstChild("events")
-            if events then
-                local cancelEmote = events:FindFirstChild("CancelEmote")
-                if cancelEmote then
-                    cancelEmote:FireServer()
+        pcall(function()
+            if startAutoPlace then
+                local events = game:GetService("ReplicatedStorage"):FindFirstChild("events")
+                if events then
+                    local cancelEmote = events:FindFirstChild("CancelEmote")
+                    if cancelEmote then
+                        cancelEmote:FireServer()
+                    end
+                end
+                if LocalPlayer.Backpack:FindFirstChild("Crab Cage") then
+                    Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Crab Cage"))
+                elseif Character:FindFirstChild("Crab Cage") then
+                    if crabCage and crabCage:FindFirstChild("Deploy") then
+                        -- -- local args = {
+                        -- --     [1] = CFrame.new(character.HumanoidRootPart.Position)
+                        -- -- }
+                        -- crabCage.Deploy:FireServer(CFrame.new(character.HumanoidRootPart.Position))
+                    Character:FindFirstChild("Crab Cage").Deploy:FireServer(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
+                    end
+                    task.wait(0.1)
+                else
+                    Fluent:Notify({
+                        Title = "Hypexz v2",
+                        Content = "No Crab Cage",
+                        Duration = 3
+                    })
+                    Options.PlaceCrabcage:SetValue(false)
+                    return
                 end
             end
-            if LocalPlayer.Backpack:FindFirstChild("Crab Cage") then
-                Character.Humanoid:EquipTool(game.Players.LocalPlayer.Backpack:FindFirstChild("Crab Cage"))
-            elseif Character:FindFirstChild("Crab Cage") then
-                if crabCage and crabCage:FindFirstChild("Deploy") then
-                    -- -- local args = {
-                    -- --     [1] = CFrame.new(character.HumanoidRootPart.Position)
-                    -- -- }
-                    -- crabCage.Deploy:FireServer(CFrame.new(character.HumanoidRootPart.Position))
-                   Character:FindFirstChild("Crab Cage").Deploy:FireServer(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)
-                end
-                task.wait(0.1)
-            else
-                Fluent:Notify({
-                    Title = "Hypexz v2",
-                    Content = "No Crab Cage",
-                    Duration = 3
-                })
-                Options.PlaceCrabcage:SetValue(false)
-                return
-            end
-        end
+        end)
     end
 end)
 
@@ -2004,6 +2127,7 @@ spawn(function()
             local Jack = workspace.world.npcs:FindFirstChild("Jack Marrow")
             if not Jack then 
                 TP(CFrame.new(-2824.359, 214.311, 1518.130))
+                repeat wait() until workspace.world.npcs:FindFirstChild("Jack Marrow") or not  AutoRepair
             else
                 for _, v in pairs(Player.Backpack:GetChildren()) do
                     if v.Name == "Treasure Map" then
@@ -2160,7 +2284,10 @@ Tabs.Rod:AddButton({
         table.sort(RodNames, function(a, b)
             return a:lower() < b:lower()
         end)
-
+        Options.SelectRodm:UpdateOptions(RodNames)
+        Options.SelectRodsc:UpdateOptions(RodNames)
+        Options.SelectRodmj:UpdateOptions(RodNames)
+        Options.SelectRodam:UpdateOptions(RodNames)
     end
 })
 
@@ -2318,44 +2445,43 @@ SatrtEnchant:OnChanged(function(value)
 end)
 
  spawn(function()
-    xpcall(function()
-        while task.wait() do
-            if not AutoEnchant then
-                continue
-            end
-            local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
-            if workspace.PlayerStats[PlayerName].T[PlayerName].Rods[RodState].Value == SelectedEnc then
-                Fluent:Notify({
-                    Title = "Hypexz v2",
-                    Content = (RodState.." : Found Enc : "..SelectedEnc),
-                    Duration = 3
-                })
-                Options.SatrtEnchant:SetValue(false)
-                return
-            end
-            TP(CFrame.new(1309.2786865234375, -802.427001953125, -83.36397552490234))
-            wait(.2)
-            if not game.Players.LocalPlayer.Character:FindFirstChild("Enchant Relic") then
-                EnchantRelic = nil
-                for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-                    if v:IsA('Tool') and v.Name == 'Enchant Relic' then
-                        EnchantRelic = v
-                    end
+    while task.wait() do
+        -- local suc , err = pcall(function()
+            if AutoEnchant then
+                local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
+                if workspace.PlayerStats[PlayerName].T[PlayerName].Rods[RodState].Value == SelectedEnc then
+                    Fluent:Notify({
+                        Title = "Hypexz v2",
+                        Content = (RodState.." : Found Enc : "..SelectedEnc),
+                        Duration = 3
+                    })
+                    Options.SatrtEnchant:SetValue(false)
+                    return
                 end
-                game.Players.LocalPlayer.Character.Humanoid:EquipTool(EnchantRelic)
-            else
-                for _, Enchant in pairs(workspace.world.interactables:GetChildren()) do
-                    if Enchant:IsA('Model') and Enchant.Name == 'Enchant Altar' then
-                        Enchant.PromptTemplate.HoldDuration = 0
-                        if workspace.world.interactables["Enchant Altar"].PromptTemplate.Enabled == true then
-                            fireproximityprompt(Enchant.PromptTemplate)
+                TP(CFrame.new(1309.2786865234375, -802.427001953125, -83.36397552490234))
+                wait(.2)
+                if not game.Players.LocalPlayer.Character:FindFirstChild("Enchant Relic") then
+                    EnchantRelic = nil
+                    for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+                        if v:IsA('Tool') and v.Name == 'Enchant Relic' then
+                            EnchantRelic = v
                         end
-                        wait(0.3)
-                        if game:GetService("Players").LocalPlayer.PlayerGui.over:FindFirstChild("prompt") then
-                            for _, Button in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
-                                if Button:IsA("ImageButton") or Button:IsA("TextButton") and Button.Name == 'confirm' then
-                                    for i, Signal in pairs(Signals) do
-                                        firesignal(Button[Signal])
+                    end
+                    game.Players.LocalPlayer.Character.Humanoid:EquipTool(EnchantRelic)
+                else
+                    for _, Enchant in pairs(workspace.world.interactables:GetChildren()) do
+                        if Enchant:IsA('Model') and Enchant.Name == 'Enchant Altar' then
+                            Enchant.PromptTemplate.HoldDuration = 0
+                            if workspace.world.interactables["Enchant Altar"].PromptTemplate.Enabled == true then
+                                fireproximityprompt(Enchant.PromptTemplate)
+                            end
+                            wait(0.3)
+                            if game:GetService("Players").LocalPlayer.PlayerGui.over:FindFirstChild("prompt") then
+                                for _, Button in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
+                                    if Button:IsA("ImageButton") or Button:IsA("TextButton") and Button.Name == 'confirm' then
+                                        for i, Signal in pairs(Signals) do
+                                            firesignal(Button[Signal])
+                                        end
                                     end
                                 end
                             end
@@ -2363,8 +2489,8 @@ end)
                     end
                 end
             end
-        end
-    end,print)
+        -- end)
+    end
 end)
 
 
@@ -2400,43 +2526,42 @@ SatrtExEnchant:OnChanged(function(value)
     AutoExEnchant = value
     local RodState = workspace:WaitForChild("PlayerStats")[PlayerName].T[PlayerName].Stats.rod.Value
     spawn(function()
-        xpcall(function()
-            while task.wait() do
-                if not AutoExEnchant then
-                    continue
-                end
-                if workspace.PlayerStats[PlayerName].T[PlayerName].Rods[RodState].Value == SelectedExEnc then
-                    Fluent:Notify({
-                        Title = "Hypexz v2",
-                        Content = (RodState.." : Found Enc : "..SelectedExEnc),
-                        Duration = 3
-                    })
-                    Options.SatrtEnchant:SetValue(false)
-                    return
-                end
-                TP(CFrame.new(1309.2786865234375, -802.427001953125, -83.36397552490234))
-                wait(.2)
-                if not game.Players.LocalPlayer.Character:FindFirstChild("Exalted Relic") then
-                    EnchantRelic = nil
-                    for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-                        if v:IsA('Tool') and v.Name == 'Exalted Relic' then
-                            EnchantRelic = v
-                        end
+        while task.wait() do
+            -- xpcall(function()
+                if AutoExEnchant then
+                    if workspace.PlayerStats[PlayerName].T[PlayerName].Rods[RodState].Value == SelectedExEnc then
+                        Fluent:Notify({
+                            Title = "Hypexz v2",
+                            Content = (RodState.." : Found Enc : "..SelectedExEnc),
+                            Duration = 3
+                        })
+                        Options.SatrtEnchant:SetValue(false)
+                        return
                     end
-                    game.Players.LocalPlayer.Character.Humanoid:EquipTool(EnchantRelic)
-                else
-                    for _, Enchant in pairs(workspace.world.interactables:GetChildren()) do
-                        if Enchant:IsA('Model') and Enchant.Name == 'Enchant Altar' then
-                            Enchant.PromptTemplate.HoldDuration = 0
-                            if workspace.world.interactables["Enchant Altar"].PromptTemplate.Enabled == true then
-                                fireproximityprompt(Enchant.PromptTemplate)
+                    TP(CFrame.new(1309.2786865234375, -802.427001953125, -83.36397552490234))
+                    wait(.2)
+                    if not game.Players.LocalPlayer.Character:FindFirstChild("Exalted Relic") then
+                        EnchantRelic = nil
+                        for _, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+                            if v:IsA('Tool') and v.Name == 'Exalted Relic' then
+                                EnchantRelic = v
                             end
-                            wait(1)
-                            if game:GetService("Players").LocalPlayer.PlayerGui.over:FindFirstChild("prompt") then
-                                for _, Button in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
-                                    if Button:IsA("ImageButton") or Button:IsA("TextButton") and Button.Name == 'confirm' then
-                                        for i, Signal in pairs(Signals) do
-                                            firesignal(Button[Signal])
+                        end
+                        game.Players.LocalPlayer.Character.Humanoid:EquipTool(EnchantRelic)
+                    else
+                        for _, Enchant in pairs(workspace.world.interactables:GetChildren()) do
+                            if Enchant:IsA('Model') and Enchant.Name == 'Enchant Altar' then
+                                Enchant.PromptTemplate.HoldDuration = 0
+                                if workspace.world.interactables["Enchant Altar"].PromptTemplate.Enabled == true then
+                                    fireproximityprompt(Enchant.PromptTemplate)
+                                end
+                                wait(1)
+                                if game:GetService("Players").LocalPlayer.PlayerGui.over:FindFirstChild("prompt") then
+                                    for _, Button in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
+                                        if Button:IsA("ImageButton") or Button:IsA("TextButton") and Button.Name == 'confirm' then
+                                            for i, Signal in pairs(Signals) do
+                                                firesignal(Button[Signal])
+                                            end
                                         end
                                     end
                                 end
@@ -2444,8 +2569,8 @@ SatrtExEnchant:OnChanged(function(value)
                         end
                     end
                 end
-            end
-        end,print)
+            -- end,print)
+        end
     end)
 end)
 
@@ -2841,42 +2966,55 @@ end)
 spawn(function()
     while task.wait() do
         if pstartbuy then 
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = BaitInfo[SelectedBait]
-            if SelectedBait == "Tropical Bait Crate" then
-                for _, v in pairs(workspace:GetDescendants()) do
-                    if v:IsA('Model') and v.Name == "Tropical Bait Crate" then
-                        local nested = v:FindFirstChild("Tropical Bait Crate")
-                        if nested and nested:FindFirstChild("PromptTemplate") then
-                            local prompt = nested.PromptTemplate
-                            if prompt:IsA("ProximityPrompt") then
-                                fireproximityprompt(prompt)
+            local suc , err = pcall(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = BaitInfo[SelectedBait]
+                if SelectedBait == "Tropical Bait Crate" then
+                    for _, v in pairs(workspace:GetDescendants()) do
+                        if v:IsA('Model') and v.Name == "Tropical Bait Crate" then
+                            local nested = v:FindFirstChild("Tropical Bait Crate")
+                            if nested and nested:FindFirstChild("PromptTemplate") then
+                                local prompt = nested.PromptTemplate
+                                if prompt:IsA("ProximityPrompt") then
+                                    fireproximityprompt(prompt)
+                                end
                             end
                         end
                     end
-                end
-            else
-                for _, v in pairs(workspace.world.interactables:GetDescendants()) do
-                    if v:IsA('Model') and v.Name == SelectedBait then
-                        for _, x in pairs(v:GetDescendants()) do
-                            if x:IsA('ProximityPrompt') and x.Name == 'PromptTemplate' then
-                                fireproximityprompt(x)
+                else
+                    for _, v in pairs(workspace.world.interactables:GetDescendants()) do
+                        if v:IsA('Model') and v.Name == SelectedBait then
+                            for _, x in pairs(v:GetDescendants()) do
+                                if x:IsA('ProximityPrompt') and x.Name == 'PromptTemplate' then
+                                    fireproximityprompt(x)
+                                end
                             end
                         end
-                    end
-                end 
-            end
-            task.wait()
-            for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
-                if v:IsA("TextBox") and v.Name == "amount" then
-                    v.Text = tonumber(AmountBaitValue)
+                    end 
                 end
-            end
-            for _, v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
-                if v:IsA("ImageButton") or v:IsA("TextButton") and v.Name == 'confirm' then
-                    for i, Signal in pairs(Signals) do
-                        firesignal(v[Signal])
+                task.wait()
+                for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
+                    if v:IsA("TextBox") and v.Name == "amount" then
+                        v.Text = tonumber(AmountBaitValue)
                     end
                 end
+
+                local Signals = {
+                    "Activated",
+                    "MouseButton1Down",
+                    "MouseButton2Down",
+                    "MouseButton1Click",
+                    "MouseButton2Click"
+                }
+                for _, v in pairs(game:GetService("Players").LocalPlayer.PlayerGui.over:GetDescendants()) do
+                    if v:IsA("ImageButton") or v:IsA("TextButton") and v.Name == 'confirm' then
+                        for i, Signal in pairs(Signals) do
+                            firesignal(v[Signal])
+                        end
+                    end
+                end
+            end)
+            if not suc then
+                warn(err)  
             end
         end
     end
